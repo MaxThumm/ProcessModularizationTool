@@ -12,6 +12,7 @@ import org.camunda.bpm.model.xml.type.ModelElementType;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,9 +26,13 @@ public class Modularizer {
     private Collection<ModelElementInstance> laneInstances; //Collection of lane instances
     private Collection<ModelElementInstance> taskInstances; //Collection of task instances
 
+    private Collection<ModelElementInstance> messageFlowInstances;
+
     private ArrayList<Participant> participants; //ArrayList of participants
     private ArrayList<Lane> lanes; //ArrayList of lanes
     private ArrayList<Task> tasks; //ArrayList of tasks
+
+    private ArrayList<MessageFlow> messageFlows;
 
     private int[][] dependencies; //Dependency matrix for all Tasks
 
@@ -40,14 +45,17 @@ public class Modularizer {
         participantInstances = modelInstance.getModelElementsByType(modelInstance.getModel().getType(Participant.class)); //create collection of participant instances
         laneInstances = modelInstance.getModelElementsByType(modelInstance.getModel().getType(Lane.class)); //create collection of lane instances
         taskInstances = modelInstance.getModelElementsByType(modelInstance.getModel().getType(Task.class)); //create collection of task instances
+        messageFlowInstances = modelInstance.getModelElementsByType(modelInstance.getModel().getType(MessageFlow.class));
 
         participants = new ArrayList<>();
         lanes = new ArrayList<>();
         tasks = new ArrayList<>();
+        messageFlows = new ArrayList<>();
 
         createParticipantList();
         createLaneList();
         createTaskList();
+        createMessageFlowList();
 
         dependencies = new int[tasks.size()][tasks.size()]; //initiate dependency matrix with length and width of number of tasks
         resetDependencies();
@@ -77,6 +85,13 @@ public class Modularizer {
         for (ModelElementInstance p:participantInstances) {
             Participant participant = (Participant) p;
             participants.add(participant);
+        }
+    }
+
+    public void createMessageFlowList() {
+        for (ModelElementInstance m:messageFlowInstances) {
+            MessageFlow messageFlow = (MessageFlow) m;
+            messageFlows.add(messageFlow);
         }
     }
 
