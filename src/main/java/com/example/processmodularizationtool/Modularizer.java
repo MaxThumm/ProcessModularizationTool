@@ -118,6 +118,21 @@ public class Modularizer {
         }
     }
 
+    public boolean isInLane(Lane lane, FlowNode flowNode) {
+        Collection<FlowNode> flowNodes = lane.getFlowNodeRefs();
+        boolean inLane = false;
+        for (FlowNode f:flowNodes) {
+            if (f.getId().equals(flowNode.getId())) {
+                inLane = true;
+            }
+            else {
+                inLane = false;
+            }
+        }
+        return inLane;
+    }
+
+
     /**
      * Checks for shared know how specificity between two tasks
      * @param n first task to check for shared know how specificity
@@ -154,6 +169,14 @@ public class Modularizer {
             }
         }
     }
+
+
+    public void checkInformationDependency(Task n, Task m) {
+        boolean hasInformationDependency = false;
+        
+    }
+
+
 
 
 }
