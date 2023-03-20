@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7ae9a8c5-b030-4654-b255-46dd8955db1f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/TaskClass.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/Modularizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/Modularizer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,6 +79,7 @@
       <workItem from="1676399644826" duration="152000" />
       <workItem from="1678265616515" duration="1030000" />
       <workItem from="1678266836990" duration="2169000" />
+      <workItem from="1679136640623" duration="2438000" />
     </task>
     <servers />
   </component>
