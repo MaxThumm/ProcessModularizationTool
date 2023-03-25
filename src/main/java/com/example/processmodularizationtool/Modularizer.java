@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.bpm.model.bpmn.instance.*;
+import org.camunda.bpm.model.bpmn.instance.Process;
 import org.camunda.bpm.model.xml.instance.ModelElementInstance;
 import org.camunda.bpm.model.xml.type.ModelElementType;
 
@@ -35,6 +36,10 @@ public class Modularizer {
     private ArrayList<MessageFlow> messageFlows;
 
     private int[][] dependencies; //Dependency matrix for all Tasks
+
+    private int[][] laneDependencies;
+    private int[][] timeDependencies;
+    private int[][] dataDependencies;
 
 
     public Modularizer(String pathName) {
@@ -139,7 +144,7 @@ public class Modularizer {
      * @param m first task to check for shared know how specificity
      * @return boolean: true if tasks n & m share know how specificity
      */
-    public boolean checkKnowHowSpecificity(Task n, Task m) {
+    /*public boolean checkKnowHowSpecificity(Task n, Task m) {
         boolean hasKnowHowSpecificity = false;
         for (Lane l:lanes) {
             Collection<FlowNode> flowNodes = l.getFlowNodeRefs();
@@ -158,13 +163,39 @@ public class Modularizer {
             }
         }
         return hasKnowHowSpecificity;
+    }*/
+
+    public int checkKnowHowSpecificity(Lane l, Task n, Task m, int counter) {
+        boolean hasKnowHowSpecificity = false;
+        Collection<FlowNode> flowNodes = l.getFlowNodeRefs();
+        boolean nInside = false;
+        boolean mInside = false;
+        for (FlowNode f:flowNodes) {
+            //nInside = false;
+            //mInside = false;
+            if (f.getId().equals(n.getId())) {
+                nInside = true;
+            }
+            if (f.getId().equals(m.getId())) {
+                mInside = true;
+            }
+        }
+        if (nInside && mInside) {
+            hasKnowHowSpecificity = true;
+        }
+        if (hasKnowHowSpecificity == true) {
+            return counter;
+        }
+        else {
+            return 0;
+        }
     }
 
     public void addKnowHowDependencies() {
         for (int i = 0; i < tasks.size(); i++) {
             for (int j = 0; j < tasks.size(); j++) {
-                if (i != j && checkKnowHowSpecificity(tasks.get(i), tasks.get(j))) {
-                    dependencies[i][j]++;
+                if (i != j) {
+                    dependencies[i][j] = dependencies[i][j] + laneCheck(tasks.get(i), tasks.get(j));
                 }
             }
         }
@@ -174,6 +205,113 @@ public class Modularizer {
     public void checkInformationDependency(Task n, Task m) {
         boolean hasInformationDependency = false;
         
+    }
+
+
+    //public void checkLane
+
+    public void checkLaneDependencies() {
+        for (Participant p: participants) {
+
+        }
+    }
+
+    /*public void lanePrint() {
+        for (Participant p:participants) {
+            System.out.println(p.getName() + ":");
+            Process process = p.getProcess();
+            Collection<LaneSet> laneSets = process.getLaneSets();
+            for (LaneSet laneSet:laneSets) {
+                Collection<Lane> lanes1 = laneSet.getLanes();
+                if (lanes1.size() > 1) {
+                    for (Lane lane:lanes1) {
+                        System.out.println("(ChildLane of " + p.getName() + ") " + lane.getName() + ": ");
+                        checkTasks(lane);
+                        checkChildLanes(lane);
+                    }
+                }
+                else {
+                    checkTasks(lanes1.iterator().next());
+                }
+            }
+            System.out.println();
+        }
+    }*/
+
+    public int laneCheck(Task n, Task m) {
+        int counter = 1;
+        int dependency = 0;
+        boolean inSameLane;
+        for (Participant p:participants) {
+            Process process = p.getProcess();
+            Collection<LaneSet> laneSets = process.getLaneSets();
+            for (LaneSet laneSet:laneSets) {
+                Collection<Lane> lanes1 = laneSet.getLanes();
+                if (lanes1.size() > 1) {
+                    counter++;
+                    for (Lane lane:lanes1) {
+                        dependency = dependency + checkChildLanes(lane, n, m, counter);
+                        dependency = dependency + checkKnowHowSpecificity(lane, n, m, counter);
+                    }
+                }
+                else {
+                    dependency = dependency + checkKnowHowSpecificity(lanes1.iterator().next(), n, m, counter);
+                }
+            }
+        }
+        return dependency;
+    }
+
+    /*public void checkChildLanes(Lane lane, int counter) {
+        LaneSet laneSet = lane.getChildLaneSet();
+        if (laneSet != null) {
+            Collection<Lane> lanes1 = laneSet.getLanes();
+            for (Lane l:lanes1) {
+                System.out.println("(ChildLane of " + lane.getName() + ") " + l.getName() + ": ");
+                checkTasks(l);
+                checkChildLanes(l);
+            }
+        }
+
+    }*/
+
+    public int checkChildLanes(Lane lane, Task n, Task m, int counter) {
+        counter ++;
+        int dependency = 0;
+        LaneSet laneSet = lane.getChildLaneSet();
+        if (laneSet != null) {
+            Collection<Lane> lanes1 = laneSet.getLanes();
+            for (Lane l:lanes1) {
+                dependency = dependency + checkChildLanes(l, n, m, counter);
+                dependency = dependency + checkKnowHowSpecificity(l, n, m, counter);
+            }
+        }
+        return dependency;
+
+    }
+
+    /*public void checkTasks(Lane lane, int counter) {
+        Collection<FlowNode> flowNodes = lane.getFlowNodeRefs();
+        if(flowNodes.size() > 0) {
+            for (FlowNode f:flowNodes) {
+                if(f instanceof Task) {
+                    System.out.print(f.getName() + ", ");
+                }
+            }
+            System.out.println();
+        }
+    }*/
+
+    public void checkTasks(Lane lane, int counter) {
+        Collection<FlowNode> flowNodes = lane.getFlowNodeRefs();
+        if(flowNodes.size() > 0) {
+            for (FlowNode f:flowNodes) {
+                if(f instanceof Task) {
+                    System.out.print(f.getName() + ", ");
+                }
+            }
+            System.out.println();
+        }
     }
 
 

@@ -40,7 +40,8 @@ public class HelloApplication extends Application {
         String pathName = scanner.nextLine();  // Read user input
          */
 
-        String pathName = "/Users/maxl/Downloads/How2Travel (Kopie).bpmn";
+        //String pathName = "/Users/maxl/Downloads/How2Travel (Kopie).bpmn";
+        String pathName = "/Users/maxl/Downloads/How2Travel (Kopie)-3.bpmn";
 
         Modularizer modularizer = new Modularizer(pathName);
 
@@ -48,6 +49,8 @@ public class HelloApplication extends Application {
         modularizer.addKnowHowDependencies();
 
         modularizer.printDependencies();
+
+        //modularizer.lanePrint();
 
 
 
