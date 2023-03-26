@@ -17,6 +17,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class Modularizer {
 
@@ -312,6 +313,57 @@ public class Modularizer {
             }
             System.out.println();
         }
+    }
+
+    public List<List> getTasksInOrder() {
+        ArrayList<List> listList = new ArrayList<>();
+        for (Participant participant:participants) {
+            listList.add(getTasksFromPool(participant));
+        }
+        return listList;
+    }
+
+    public ArrayList<Task> getTasksFromPool(Participant participant) {
+        System.out.print(participant.getName() + ": ");
+        Collection<FlowElement> flowElements = participant.getProcess().getFlowElements();
+        StartEvent start = null;
+        for (FlowElement flowElement:flowElements) {
+            if(flowElement instanceof StartEvent) {
+                start = (StartEvent) flowElement;
+                System.out.print("(StartEvent: " + start.getName() + ") ");
+            }
+        }
+        ArrayList<Task> tasks1 = getFollowingTasks(start);
+        for(Task task:tasks1) {
+            System.out.print(task.getName() + ", ");
+        }
+
+        /*List<Task> tasks1 = start.getSucceedingNodes().filterByType(Task.class).list();
+        for(Task task:tasks1) {
+            System.out.print(task.getName() + ", ");
+        }*/
+        System.out.println();
+        System.out.println();
+        return tasks1;
+    }
+
+    public ArrayList<Task> getFollowingTasks(FlowNode flowNode) {
+        ArrayList<Task> tasks1 = new ArrayList<>();
+        if(flowNode instanceof Task) {
+            tasks1.add((Task)flowNode);
+        }
+        List<FlowNode>following = getNextTask(flowNode);
+        if(following.isEmpty() == false) {
+            for (FlowNode f:following) {
+                getFollowingTasks(f);
+            }
+        }
+        return tasks1;
+    }
+
+    public List<FlowNode> getNextTask(FlowNode flowNode) {
+        List<FlowNode> following = flowNode.getSucceedingNodes().list();
+        return following;
     }
 
 

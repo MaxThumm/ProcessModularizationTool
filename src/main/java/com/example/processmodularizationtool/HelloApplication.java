@@ -46,11 +46,13 @@ public class HelloApplication extends Application {
         Modularizer modularizer = new Modularizer(pathName);
 
 
-        modularizer.addKnowHowDependencies();
+        //modularizer.addKnowHowDependencies();
 
-        modularizer.printDependencies();
+        //modularizer.printDependencies();
 
         //modularizer.lanePrint();
+
+        modularizer.getTasksInOrder();
 
 
 
