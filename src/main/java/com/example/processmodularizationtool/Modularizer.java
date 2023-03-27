@@ -13,6 +13,7 @@ import org.camunda.bpm.model.xml.type.ModelElementType;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.ElementType;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -326,6 +327,9 @@ public class Modularizer {
     public ArrayList<Task> getTasksFromPool(Participant participant) {
         System.out.print(participant.getName() + ": ");
         Collection<FlowElement> flowElements = participant.getProcess().getFlowElements();
+        /*for (FlowElement f:flowElements) {
+            System.out.println(f.getName());
+        }*/
         StartEvent start = null;
         for (FlowElement flowElement:flowElements) {
             if(flowElement instanceof StartEvent) {
@@ -333,10 +337,31 @@ public class Modularizer {
                 System.out.print("(StartEvent: " + start.getName() + ") ");
             }
         }
-        ArrayList<Task> tasks1 = getFollowingTasks(start);
-        for(Task task:tasks1) {
-            System.out.print(task.getName() + ", ");
+        ArrayList<Task> tasks1 = new ArrayList<>();       //getFollowingTasks(start);
+        List<FlowNode> following = start.getSucceedingNodes().list();
+        int counter = 0;
+        while (following.size() > counter) {
+            int i = following.size();
+            while (counter < i) {                //for (FlowNode flowNode:following) {
+                if(following.get(counter) instanceof Task && tasks1.contains(following.get(counter)) == false) {
+                    System.out.print(following.get(counter).getName() + ", ");
+                    tasks1.add((Task)following.get(counter));
+                }
+                for (FlowNode f:following.get(counter).getSucceedingNodes().list()) {
+                    if (following.contains(f) == false) {
+                        following.add(i, f);
+                    }
+                }
+                //following = flowNode.getSucceedingNodes().list();
+
+                i = following.size();
+                counter++;
+            }
         }
+
+        /*for(Task task:tasks1) {
+            System.out.print(task.getName() + ", ");
+        }*/
 
         /*List<Task> tasks1 = start.getSucceedingNodes().filterByType(Task.class).list();
         for(Task task:tasks1) {
@@ -347,24 +372,48 @@ public class Modularizer {
         return tasks1;
     }
 
-    public ArrayList<Task> getFollowingTasks(FlowNode flowNode) {
+    /*public ArrayList<Task> getFollowingTasks(FlowNode flowNode) {
         ArrayList<Task> tasks1 = new ArrayList<>();
-        if(flowNode instanceof Task) {
-            tasks1.add((Task)flowNode);
-        }
         List<FlowNode>following = getNextTask(flowNode);
-        if(following.isEmpty() == false) {
+        while (following.size() > 0) {
+            for (FlowNode f:following) {
+
+                    //if(flowNode instanceof Task && tasks1.contains((Task) flowNode) == false) {
+                if(flowNode instanceof Activity) {
+                    System.out.print(f.getName() + ", ");
+                    tasks1.add((Task)f);
+                }
+                following = getNextTask(f);
+
+
+            }
+        }
+
+
+        /*if(following.isEmpty() == false) {
             for (FlowNode f:following) {
                 getFollowingTasks(f);
             }
         }
         return tasks1;
-    }
+    }*/
 
-    public List<FlowNode> getNextTask(FlowNode flowNode) {
+    /*public List<FlowNode> getNextTask(FlowNode flowNode) {
         List<FlowNode> following = flowNode.getSucceedingNodes().list();
         return following;
+    }*/
+
+    public void getTasksOrdered() {
+        Participant participant = null;
+        for (Participant p:participants) {
+            if (p.getName().equals("Nutzer")) {
+                participant = p;
+            }
+        }
+        System.out.println(participant.getName());
+        getTasksFromPool(participant);
     }
+
 
 
 
