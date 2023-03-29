@@ -41,7 +41,7 @@ public class HelloApplication extends Application {
          */
 
         //String pathName = "/Users/maxl/Downloads/How2Travel (Kopie).bpmn";
-        String pathName = "/Users/maxl/Downloads/How2Travel (Kopie)-3.bpmn";
+        String pathName = "/Users/maxl/Downloads/How2Travel (Kopie)-4.bpmn";
 
         Modularizer modularizer = new Modularizer(pathName);
 
@@ -52,7 +52,10 @@ public class HelloApplication extends Application {
 
         //modularizer.lanePrint();
 
-        modularizer.getTasksInOrder();
+        //modularizer.getTasksInOrder();
+
+        modularizer.checkTimeDependency();
+        modularizer.printTimeDependencies();
 
 
 

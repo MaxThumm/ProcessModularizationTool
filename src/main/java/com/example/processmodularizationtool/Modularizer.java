@@ -41,6 +41,7 @@ public class Modularizer {
 
     private int[][] laneDependencies;
     private int[][] timeDependencies;
+    private int[][] inputDependencies;
     private int[][] dataDependencies;
 
 
@@ -65,7 +66,11 @@ public class Modularizer {
         createMessageFlowList();
 
         dependencies = new int[tasks.size()][tasks.size()]; //initiate dependency matrix with length and width of number of tasks
-        resetDependencies();
+        laneDependencies = new int[tasks.size()][tasks.size()];
+        timeDependencies = new int[tasks.size()][tasks.size()];
+        inputDependencies = new int[tasks.size()][tasks.size()];
+        dataDependencies = new int[tasks.size()][tasks.size()];
+        resetAllDependencies();
     }
 
     /**
@@ -115,11 +120,111 @@ public class Modularizer {
         }
     }
 
+    public void resetLaneDependencies() {
+        for (int i = 0; i < laneDependencies.length; i++) {
+            for (int j = 0; j < laneDependencies.length; j++) {
+                if (i == j) {
+                    laneDependencies[i][j] = -1;
+                }
+                else {
+                    laneDependencies[i][j] = 0;
+                }
+            }
+        }
+    }
+
+    public void resetTimeDependencies() {
+        for (int i = 0; i < timeDependencies.length; i++) {
+            for (int j = 0; j < timeDependencies.length; j++) {
+                if (i == j) {
+                    timeDependencies[i][j] = -1;
+                }
+                else {
+                    timeDependencies[i][j] = 0;
+                }
+            }
+        }
+    }
+
+    public void resetInputDependencies() {
+        for (int i = 0; i < inputDependencies.length; i++) {
+            for (int j = 0; j < inputDependencies.length; j++) {
+                if (i == j) {
+                    inputDependencies[i][j] = -1;
+                }
+                else {
+                    inputDependencies[i][j] = 0;
+                }
+            }
+        }
+    }
+
+    public void resetDataDependencies() {
+        for (int i = 0; i < dataDependencies.length; i++) {
+            for (int j = 0; j < dataDependencies.length; j++) {
+                if (i == j) {
+                    dataDependencies[i][j] = -1;
+                }
+                else {
+                    dataDependencies[i][j] = 0;
+                }
+            }
+        }
+    }
+
+    public void resetAllDependencies() {
+        resetDependencies();
+        resetLaneDependencies();
+        resetTimeDependencies();
+        resetInputDependencies();
+        resetDataDependencies();
+    }
+
     public void printDependencies() {
         for (int i = 0; i < dependencies.length; i++) {
             System.out.print(tasks.get(i).getName() + ":    ");
             for (int j = 0; j < dependencies.length; j++) {
                 System.out.print("T" + j + ": " + dependencies[i][j] + " | ");
+            }
+            System.out.println();
+        }
+    }
+
+    public void printLaneDependencies() {
+        for (int i = 0; i < laneDependencies.length; i++) {
+            System.out.print(tasks.get(i).getName() + ":    ");
+            for (int j = 0; j < laneDependencies.length; j++) {
+                System.out.print("T" + j + ": " + laneDependencies[i][j] + " | ");
+            }
+            System.out.println();
+        }
+    }
+
+    public void printTimeDependencies() {
+        for (int i = 0; i < timeDependencies.length; i++) {
+            System.out.print(tasks.get(i).getName() + ":    ");
+            for (int j = 0; j < timeDependencies.length; j++) {
+                System.out.print("T" + j + ": " + timeDependencies[i][j] + " | ");
+            }
+            System.out.println();
+        }
+    }
+
+    public void printInputDependencies() {
+        for (int i = 0; i < inputDependencies.length; i++) {
+            System.out.print(tasks.get(i).getName() + ":    ");
+            for (int j = 0; j < inputDependencies.length; j++) {
+                System.out.print("T" + j + ": " + inputDependencies[i][j] + " | ");
+            }
+            System.out.println();
+        }
+    }
+
+    public void printDataDependencies() {
+        for (int i = 0; i < dataDependencies.length; i++) {
+            System.out.print(tasks.get(i).getName() + ":    ");
+            for (int j = 0; j < dataDependencies.length; j++) {
+                System.out.print("T" + j + ": " + dataDependencies[i][j] + " | ");
             }
             System.out.println();
         }
@@ -197,7 +302,7 @@ public class Modularizer {
         for (int i = 0; i < tasks.size(); i++) {
             for (int j = 0; j < tasks.size(); j++) {
                 if (i != j) {
-                    dependencies[i][j] = dependencies[i][j] + laneCheck(tasks.get(i), tasks.get(j));
+                    laneDependencies[i][j] = laneDependencies[i][j] + laneCheck(tasks.get(i), tasks.get(j));
                 }
             }
         }
@@ -412,6 +517,82 @@ public class Modularizer {
         }
         System.out.println(participant.getName());
         getTasksFromPool(participant);
+    }
+
+    public void checkTimeDependency() {
+        Collection<ModelElementInstance> flowNodeInstances = modelInstance.getModelElementsByType(modelInstance.getModel().getType(FlowNode.class));
+        ArrayList<FlowNode> allFlowNodes = new ArrayList<>();
+        for (ModelElementInstance x:flowNodeInstances) {
+            allFlowNodes.add((FlowNode) x);
+        }
+        ArrayList<Task> timeDependentTasks = new ArrayList<>();
+        for (FlowNode flowNode:allFlowNodes) {
+            if (flowNode instanceof ParallelGateway && flowNode.getPreviousNodes().list().size() > 1) {
+                timeDependentTasks.add(getFirstTaskFollowing(flowNode));
+                getTasksAfterGateway(flowNode, timeDependentTasks);
+            }
+        }
+
+        for (int i = 0; i < tasks.size(); i++) {
+            for (Task n:timeDependentTasks) {
+                if (n.getId().equals(tasks.get(i).getId())) {
+                    for (int j = 0; j < tasks.size(); j++) {
+                        for (Task m:timeDependentTasks) {
+                            if (m.getId().equals(tasks.get(j).getId()) && i != j) {
+                                timeDependencies[i][j] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /*public void getTasksAfterGateway(FlowNode flowNode) {
+        ArrayList<Gateway> gateways = new ArrayList<>();
+        ArrayList<Task> tasksBetweenGateways = new ArrayList<>();
+        if (flowNode  instanceof Task) {
+            tasksBetweenGateways.add((Task) flowNode);
+        }
+        for (FlowNode f:flowNode.getPreviousNodes().list()) {
+            if (flowNode.getPreviousNodes().list)
+            if (f instanceof Task) {
+                tasksBetweenGateways.add((Task) f);
+            }
+            else if (f instanceof Gateway && gateways.contains(f) == true) {
+                break;
+            }
+            else if (f instanceof Gateway && gateways.contains(f) == false) {
+                gateways.add((Gateway) f);
+            }
+
+        }
+    }*/
+
+    public void getTasksAfterGateway(FlowNode flowNode, ArrayList<Task> tasksBetweenGateways) {
+        if (flowNode.getPreviousNodes().list().size() != 0) {
+            for (FlowNode f:flowNode.getPreviousNodes().list()) {
+                if (f instanceof Task && tasksBetweenGateways.contains(f) == false) {
+                    tasksBetweenGateways.add((Task) f);
+                }
+                getTasksAfterGateway(f, tasksBetweenGateways);
+            }
+        }
+    }
+
+    public Task getFirstTaskFollowing(FlowNode flowNode) {
+        Task firstTask = null;
+        if (flowNode.getSucceedingNodes().list().size()>0) {
+            for (FlowNode f:flowNode.getSucceedingNodes().list()) {
+                if (f instanceof Task) {
+                    firstTask = (Task) f;
+                }
+                else {
+                    firstTask = getFirstTaskFollowing(f);
+                }
+            }
+        }
+        return firstTask;
     }
 
 
