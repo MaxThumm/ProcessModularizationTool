@@ -180,6 +180,140 @@ public class Modularizer {
         resetDataDependencies();
     }
 
+    public void combineDependencies() {
+        for (int i = 0; i < dependencies.length; i++) {
+            for (int j = 0; j < dependencies.length; j++) {
+                dependencies[i][j] = laneDependencies[i][j] + timeDependencies[i][j] + inputDependencies[i][j] + dataDependencies[i][j];
+            }
+        }
+    }
+
+    public void exportLaneDependencies(String fileName) {
+        String[][] laneDependencyStrings = new String[laneDependencies.length + 1][laneDependencies.length + 1];
+        for (int i = 0; i < laneDependencyStrings.length; i++) {
+            for (int j = 0; j < laneDependencyStrings.length; j++) {
+                if (i == 0) {
+                    if (j == 0) {
+                        laneDependencyStrings[i][j] = "X";
+                    }
+                    else {
+                        laneDependencyStrings[i][j] = tasks.get(j - 1).getName();
+                    }
+                }
+                else if (j == 0) {
+                    laneDependencyStrings[i][j] = tasks.get(i - 1).getName();
+                }
+                else {
+                    laneDependencyStrings[i][j] = String.valueOf(laneDependencies[i - 1][j - 1]);
+                }
+            }
+        }
+
+        CsvWriter writer = new CsvWriter();
+        writer.exportCsv(laneDependencyStrings, fileName);
+    }
+
+    public void exportTimeDependencies(String fileName) {
+        String[][] timeDependencyStrings = new String[timeDependencies.length + 1][timeDependencies.length + 1];
+        for (int i = 0; i < timeDependencyStrings.length; i++) {
+            for (int j = 0; j < timeDependencyStrings.length; j++) {
+                if (i == 0) {
+                    if (j == 0) {
+                        timeDependencyStrings[i][j] = "X";
+                    }
+                    else {
+                        timeDependencyStrings[i][j] = tasks.get(j - 1).getName();
+                    }
+                }
+                else if (j == 0) {
+                    timeDependencyStrings[i][j] = tasks.get(i - 1).getName();
+                }
+                else {
+                    timeDependencyStrings[i][j] = String.valueOf(timeDependencies[i - 1][j - 1]);
+                }
+            }
+        }
+
+        CsvWriter writer = new CsvWriter();
+        writer.exportCsv(timeDependencyStrings, fileName);
+    }
+
+    public void exportInputDependencies(String fileName) {
+        String[][] inputDependencyStrings = new String[inputDependencies.length + 1][inputDependencies.length + 1];
+        for (int i = 0; i < inputDependencyStrings.length; i++) {
+            for (int j = 0; j < inputDependencyStrings.length; j++) {
+                if (i == 0) {
+                    if (j == 0) {
+                        inputDependencyStrings[i][j] = "X";
+                    }
+                    else {
+                        inputDependencyStrings[i][j] = tasks.get(j - 1).getName();
+                    }
+                }
+                else if (j == 0) {
+                    inputDependencyStrings[i][j] = tasks.get(i - 1).getName();
+                }
+                else {
+                    inputDependencyStrings[i][j] = String.valueOf(inputDependencies[i - 1][j - 1]);
+                }
+            }
+        }
+
+        CsvWriter writer = new CsvWriter();
+        writer.exportCsv(inputDependencyStrings, fileName);
+    }
+
+    public void exportDataDependencies(String fileName) {
+        String[][] dataDependencyStrings = new String[dataDependencies.length + 1][dataDependencies.length + 1];
+        for (int i = 0; i < dataDependencyStrings.length; i++) {
+            for (int j = 0; j < dataDependencyStrings.length; j++) {
+                if (i == 0) {
+                    if (j == 0) {
+                        dataDependencyStrings[i][j] = "X";
+                    }
+                    else {
+                        dataDependencyStrings[i][j] = tasks.get(j - 1).getName();
+                    }
+                }
+                else if (j == 0) {
+                    dataDependencyStrings[i][j] = tasks.get(i - 1).getName();
+                }
+                else {
+                    dataDependencyStrings[i][j] = String.valueOf(dataDependencies[i - 1][j - 1]);
+                }
+            }
+        }
+
+        CsvWriter writer = new CsvWriter();
+        writer.exportCsv(dataDependencyStrings, fileName);
+    }
+
+    public void exportCombinedDependencies(String fileName) {
+        combineDependencies();
+        String[][] dependencyStrings = new String[dependencies.length + 1][dependencies.length + 1];
+        for (int i = 0; i < dependencyStrings.length; i++) {
+            for (int j = 0; j < dependencyStrings.length; j++) {
+                if (i == 0) {
+                    if (j == 0) {
+                        dependencyStrings[i][j] = "X";
+                    }
+                    else {
+                        dependencyStrings[i][j] = tasks.get(j - 1).getName();
+                    }
+                }
+                else if (j == 0) {
+                    dependencyStrings[i][j] = tasks.get(i - 1).getName();
+                }
+                else {
+                    dependencyStrings[i][j] = String.valueOf(dependencies[i - 1][j - 1]);
+                }
+            }
+        }
+
+        CsvWriter writer = new CsvWriter();
+        writer.exportCsv(dependencyStrings, fileName);
+    }
+
     public void printDependencies() {
         for (int i = 0; i < dependencies.length; i++) {
             System.out.print(tasks.get(i).getName() + ":    ");
@@ -533,6 +667,26 @@ public class Modularizer {
             }
         }
 
+        for (int i = 0; i < timeDependentTasks.size(); i++) {
+            int counter = 0;
+            String taskToRemove = null;
+            for (int j = 0; j < timeDependentTasks.size(); j++) {
+                if (i != j && timeDependentTasks.get(i).getId().equals(timeDependentTasks.get(j).getId())) {
+                    taskToRemove = timeDependentTasks.get(j).getId();
+                    //timeDependentTasks.remove(j);
+                    //j--;
+                }
+            }
+            if (taskToRemove != null) {
+                for (int n = 0; n < timeDependentTasks.size(); n++) {
+                    if (timeDependentTasks.get(n).getId().equals(taskToRemove)) {
+                        timeDependentTasks.remove(n);
+                        n--;
+                    }
+                }
+            }
+        }
+
         for (int i = 0; i < tasks.size(); i++) {
             for (Task n:timeDependentTasks) {
                 if (n.getId().equals(tasks.get(i).getId())) {
@@ -572,7 +726,16 @@ public class Modularizer {
     public void getTasksAfterGateway(FlowNode flowNode, ArrayList<Task> tasksBetweenGateways) {
         if (flowNode.getPreviousNodes().list().size() != 0) {
             for (FlowNode f:flowNode.getPreviousNodes().list()) {
-                if (f instanceof Task && tasksBetweenGateways.contains(f) == false) {
+                if (f instanceof Task) {
+                    int counter = 0;
+                    for (Task t:tasksBetweenGateways) {
+                        if (f.getId().equals(t.getId())) {
+                            counter++;
+                        }
+                    }
+                    if (counter > 20) {
+                        continue;
+                    }
                     tasksBetweenGateways.add((Task) f);
                 }
                 getTasksAfterGateway(f, tasksBetweenGateways);
@@ -595,7 +758,34 @@ public class Modularizer {
         return firstTask;
     }
 
+    public boolean checkDocumentDependency(Task n, Task m) {
+        boolean hasDocumentDependency = false;
+        for (DataAssociation associationN:n.getDataInputAssociations()) {
+            for (DataAssociation associationM:m.getDataInputAssociations()) {
+                for (ItemAwareElement sourceN:associationN.getSources()) {
+                    for (ItemAwareElement sourceM:associationM.getSources()) {
+                        if(sourceN instanceof DataStoreReference && sourceM instanceof DataStoreReference && ((DataStoreReference) sourceN).getName().equals(((DataStoreReference) sourceM).getName())) {
+                            hasDocumentDependency = true;
+                        }
+                        else if (sourceN instanceof DataObjectReference && sourceM instanceof DataObjectReference && ((DataObjectReference) sourceN).getName().equals(((DataObjectReference) sourceM).getName())) {
+                            hasDocumentDependency = true;
+                        }
+                    }
+                }
+            }
+        }
+        return hasDocumentDependency;
+    }
 
+    public void addDocumentDependencies() {
+        for (int i = 0; i < tasks.size(); i++) {
+            for (int j = 0; j < tasks.size(); j++) {
+                if (i != j && checkDocumentDependency(tasks.get(i), tasks.get(j)) == true) {
+                    inputDependencies[i][j] = 1;
+                }
+            }
+        }
+    }
 
 
 

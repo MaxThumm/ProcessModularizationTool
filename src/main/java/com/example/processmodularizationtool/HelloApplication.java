@@ -41,12 +41,12 @@ public class HelloApplication extends Application {
          */
 
         //String pathName = "/Users/maxl/Downloads/How2Travel (Kopie).bpmn";
-        String pathName = "/Users/maxl/Downloads/How2Travel (Kopie)-4.bpmn";
+        String pathName = "/Users/maxl/Downloads/How2Travel (Kopie)-6.bpmn";
 
         Modularizer modularizer = new Modularizer(pathName);
 
 
-        //modularizer.addKnowHowDependencies();
+        modularizer.addKnowHowDependencies();
 
         //modularizer.printDependencies();
 
@@ -55,7 +55,14 @@ public class HelloApplication extends Application {
         //modularizer.getTasksInOrder();
 
         modularizer.checkTimeDependency();
-        modularizer.printTimeDependencies();
+        //modularizer.printTimeDependencies();
+
+        modularizer.addDocumentDependencies();
+        //modularizer.printInputDependencies();
+
+        modularizer.exportCombinedDependencies("How2Travel (Kopie)-6_dependencies.csv");
+
+
 
 
 
