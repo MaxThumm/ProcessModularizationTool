@@ -531,6 +531,82 @@ public class Modularizer {
 
     }
 
+    public void addLaneDependencies() {
+        for (int i = 0; i < tasks.size(); i++) {
+            for (int j = 0; j < tasks.size(); j++) {
+                if (i != j) {
+                    laneDependencies[i][j] = checkLaneDependency(tasks.get(i), tasks.get(j));
+                }
+            }
+        }
+    }
+
+    public int checkLaneDependency (Task n, Task m) {
+        int dependency = 0;
+        boolean inSameLane;
+        for (Participant p:participants) {
+            Process process = p.getProcess();
+            Collection<LaneSet> laneSets = process.getLaneSets();
+            for (LaneSet laneSet:laneSets) {
+                ArrayList<Task> tasksInside = new ArrayList<>();
+                Collection<Lane> lanes1 = laneSet.getLanes();
+                for (Lane lane:lanes1) {
+                    dependency = dependency + laneDependencyCheck(lane, n, m, tasksInside);
+                }
+            }
+        }
+        return dependency;
+    }
+
+    public int laneDependencyCheck(Lane lane, Task n, Task m, ArrayList<Task> tasksInside) {
+        int counter = 1;
+        getTasksInside(lane, tasksInside);
+
+        if (tasksInside.contains(n) && tasksInside.contains(m)) {
+            ArrayList<Task> insideChildLane = new ArrayList<>();
+            LaneSet laneSet = lane.getChildLaneSet();
+            if (laneSet != null) {
+                for (Lane l:laneSet.getLanes()) {
+                    counter = counter + laneDependencyCheck(l, n, m, insideChildLane);
+                }
+            }
+            return counter;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    public void getTasksInside(Lane lane, ArrayList<Task> tasksInside) {
+        for (FlowNode flowNode:lane.getFlowNodeRefs()) {
+            if (flowNode instanceof Task) {
+                tasksInside.add((Task) flowNode);
+            }
+        }
+        LaneSet laneSet = lane.getChildLaneSet();
+        if (laneSet != null) {
+            Collection<Lane> lanes1 = laneSet.getLanes();
+            for (Lane l:lanes1) {
+                getTasksInside(l, tasksInside);
+            }
+        }
+    }
+
+    public void printLaneContent() {
+        for (Lane lane: lanes) {
+            ArrayList<Task> tasksInside = new ArrayList<>();
+            getTasksInside(lane, tasksInside);
+            if (tasksInside.size() > 0) {
+                for (Task task:tasksInside) {
+                    System.out.println(task.getName());
+                }
+            }
+            else {
+                System.out.println("Lane leer");
+            }
+        }
+    }
+
     /*public void checkTasks(Lane lane, int counter) {
         Collection<FlowNode> flowNodes = lane.getFlowNodeRefs();
         if(flowNodes.size() > 0) {
@@ -662,7 +738,9 @@ public class Modularizer {
         ArrayList<Task> timeDependentTasks = new ArrayList<>();
         for (FlowNode flowNode:allFlowNodes) {
             if (flowNode instanceof ParallelGateway && flowNode.getPreviousNodes().list().size() > 1) {
-                timeDependentTasks.add(getFirstTaskFollowing(flowNode));
+                if (getFirstTaskFollowing(flowNode) != null) {
+                    timeDependentTasks.add(getFirstTaskFollowing(flowNode));
+                }
                 getTasksAfterGateway(flowNode, timeDependentTasks);
             }
         }
@@ -745,10 +823,13 @@ public class Modularizer {
 
     public Task getFirstTaskFollowing(FlowNode flowNode) {
         Task firstTask = null;
-        if (flowNode.getSucceedingNodes().list().size()>0) {
+        if (flowNode.getSucceedingNodes().list().size() > 0) {
             for (FlowNode f:flowNode.getSucceedingNodes().list()) {
                 if (f instanceof Task) {
                     firstTask = (Task) f;
+                }
+                else if (f instanceof CatchEvent) {
+                    continue;
                 }
                 else {
                     firstTask = getFirstTaskFollowing(f);
@@ -782,6 +863,43 @@ public class Modularizer {
             for (int j = 0; j < tasks.size(); j++) {
                 if (i != j && checkDocumentDependency(tasks.get(i), tasks.get(j)) == true) {
                     inputDependencies[i][j] = 1;
+                }
+            }
+        }
+    }
+
+    public boolean checkDataDependency(Task n, Task m) {
+        boolean hasDataDependency = false;
+        for (DataAssociation associationN:n.getDataOutputAssociations()) {
+            for (DataAssociation associationM:m.getDataInputAssociations()) {
+                for (ItemAwareElement sourceM:associationM.getSources()) {
+                    //System.out.println("Target output " + n.getName() + ": (" + associationN.getTarget().getClass() + ") " + associationN.getTarget().getId());
+                    //System.out.println("Source input " + m.getName() + ": (" + sourceM.getClass() + ") " + sourceM.getId());
+                    if (associationN.getTarget() instanceof DataObjectReference && sourceM instanceof DataObjectReference && associationN.getTarget().getId().equals(sourceM.getId())) {
+                        hasDataDependency = true;
+                    }
+                }
+            }
+        }
+        for (DataAssociation associationN:n.getDataInputAssociations()) {
+            for (DataAssociation associationM:m.getDataOutputAssociations()) {
+                for (ItemAwareElement sourceN:associationN.getSources()) {
+                    //System.out.println("Target output " + m.getName() + ": (" + associationM.getTarget().getClass() + ") " + associationM.getTarget().getId());
+                    //System.out.println("Source input " + n.getName() + ": (" + sourceN.getClass() + ") " + sourceN.getId());
+                    if (associationM.getTarget() instanceof DataObjectReference && sourceN instanceof DataObjectReference && associationM.getTarget().getId().equals(sourceN.getId())) {
+                        hasDataDependency = true;
+                    }
+                }
+            }
+        }
+        return hasDataDependency;
+    }
+
+    public void addDataDependencies() {
+        for (int i = 0; i < tasks.size(); i++) {
+            for (int j = 0; j < tasks.size(); j++) {
+                if (i != j && checkDataDependency(tasks.get(i), tasks.get(j)) == true) {
+                    dataDependencies[i][j] = 1;
                 }
             }
         }

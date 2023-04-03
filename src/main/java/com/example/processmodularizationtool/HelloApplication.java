@@ -46,7 +46,9 @@ public class HelloApplication extends Application {
         Modularizer modularizer = new Modularizer(pathName);
 
 
-        modularizer.addKnowHowDependencies();
+        //modularizer.addKnowHowDependencies();
+
+        modularizer.addLaneDependencies();
 
         //modularizer.printDependencies();
 
@@ -59,6 +61,9 @@ public class HelloApplication extends Application {
 
         modularizer.addDocumentDependencies();
         //modularizer.printInputDependencies();
+
+        modularizer.addDataDependencies();
+        //modularizer.exportDataDependencies("How2Travel (Kopie)-6_dataDependencies.csv");
 
         modularizer.exportCombinedDependencies("How2Travel (Kopie)-6_dependencies.csv");
 
