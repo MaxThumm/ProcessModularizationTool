@@ -197,11 +197,19 @@ public class Modularizer {
                         laneDependencyStrings[i][j] = "X";
                     }
                     else {
-                        laneDependencyStrings[i][j] = tasks.get(j - 1).getName();
+                        String string = tasks.get(j - 1).getName();
+                        string = string.replaceAll("\r\n", " ");
+                        string = string.replaceAll("\n", " ");
+                        string = string.replaceAll("\r", " ");
+                        laneDependencyStrings[i][j] = string;
                     }
                 }
                 else if (j == 0) {
-                    laneDependencyStrings[i][j] = tasks.get(i - 1).getName();
+                    String string = tasks.get(i - 1).getName();
+                    string = string.replaceAll("\r\n", " ");
+                    string = string.replaceAll("\n", " ");
+                    string = string.replaceAll("\r", " ");
+                    laneDependencyStrings[i][j] = string;
                 }
                 else {
                     laneDependencyStrings[i][j] = String.valueOf(laneDependencies[i - 1][j - 1]);
@@ -222,11 +230,19 @@ public class Modularizer {
                         timeDependencyStrings[i][j] = "X";
                     }
                     else {
-                        timeDependencyStrings[i][j] = tasks.get(j - 1).getName();
+                        String string = tasks.get(j - 1).getName();
+                        string = string.replaceAll("\r\n", " ");
+                        string = string.replaceAll("\n", " ");
+                        string = string.replaceAll("\r", " ");
+                        timeDependencyStrings[i][j] = string;
                     }
                 }
                 else if (j == 0) {
-                    timeDependencyStrings[i][j] = tasks.get(i - 1).getName();
+                    String string = tasks.get(i - 1).getName();
+                    string = string.replaceAll("\r\n", " ");
+                    string = string.replaceAll("\n", " ");
+                    string = string.replaceAll("\r", " ");
+                    timeDependencyStrings[i][j] = string;
                 }
                 else {
                     timeDependencyStrings[i][j] = String.valueOf(timeDependencies[i - 1][j - 1]);
@@ -247,11 +263,19 @@ public class Modularizer {
                         inputDependencyStrings[i][j] = "X";
                     }
                     else {
-                        inputDependencyStrings[i][j] = tasks.get(j - 1).getName();
+                        String string = tasks.get(j - 1).getName();
+                        string = string.replaceAll("\r\n", " ");
+                        string = string.replaceAll("\n", " ");
+                        string = string.replaceAll("\r", " ");
+                        inputDependencyStrings[i][j] = string;
                     }
                 }
                 else if (j == 0) {
-                    inputDependencyStrings[i][j] = tasks.get(i - 1).getName();
+                    String string = tasks.get(i - 1).getName();
+                    string = string.replaceAll("\r\n", " ");
+                    string = string.replaceAll("\n", " ");
+                    string = string.replaceAll("\r", " ");
+                    inputDependencyStrings[i][j] = string;
                 }
                 else {
                     inputDependencyStrings[i][j] = String.valueOf(inputDependencies[i - 1][j - 1]);
@@ -272,11 +296,19 @@ public class Modularizer {
                         dataDependencyStrings[i][j] = "X";
                     }
                     else {
-                        dataDependencyStrings[i][j] = tasks.get(j - 1).getName();
+                        String string = tasks.get(j - 1).getName();
+                        string = string.replaceAll("\r\n", " ");
+                        string = string.replaceAll("\n", " ");
+                        string = string.replaceAll("\r", " ");
+                        dataDependencyStrings[i][j] = string;
                     }
                 }
                 else if (j == 0) {
-                    dataDependencyStrings[i][j] = tasks.get(i - 1).getName();
+                    String string = tasks.get(i - 1).getName();
+                    string = string.replaceAll("\r\n", " ");
+                    string = string.replaceAll("\n", " ");
+                    string = string.replaceAll("\r", " ");
+                    dataDependencyStrings[i][j] = string;
                 }
                 else {
                     dataDependencyStrings[i][j] = String.valueOf(dataDependencies[i - 1][j - 1]);
@@ -298,11 +330,19 @@ public class Modularizer {
                         dependencyStrings[i][j] = "X";
                     }
                     else {
-                        dependencyStrings[i][j] = tasks.get(j - 1).getName();
+                        String string = tasks.get(j - 1).getName();
+                        string = string.replaceAll("\r\n", " ");
+                        string = string.replaceAll("\n", " ");
+                        string = string.replaceAll("\r", " ");
+                        dependencyStrings[i][j] = string;
                     }
                 }
                 else if (j == 0) {
-                    dependencyStrings[i][j] = tasks.get(i - 1).getName();
+                    String string = tasks.get(i - 1).getName();
+                    string = string.replaceAll("\r\n", " ");
+                    string = string.replaceAll("\n", " ");
+                    string = string.replaceAll("\r", " ");
+                    dependencyStrings[i][j] = string;
                 }
                 else {
                     dependencyStrings[i][j] = String.valueOf(dependencies[i - 1][j - 1]);
@@ -546,19 +586,23 @@ public class Modularizer {
         boolean inSameLane;
         for (Participant p:participants) {
             Process process = p.getProcess();
+            ArrayList<Task> tasksInside = new ArrayList<>();
             Collection<LaneSet> laneSets = process.getLaneSets();
             for (LaneSet laneSet:laneSets) {
-                ArrayList<Task> tasksInside = new ArrayList<>();
-                Collection<Lane> lanes1 = laneSet.getLanes();
-                for (Lane lane:lanes1) {
-                    dependency = dependency + laneDependencyCheck(lane, n, m, tasksInside);
+                //ArrayList<Task> tasksInside = new ArrayList<>();
+                if (laneSet != null) {
+                    dependency = laneDependencyCheck(laneSet, n, m, tasksInside);
                 }
+                /*Collection<Lane> lanes1 = laneSet.getLanes();
+                for (Lane lane:lanes1) {
+                    dependency = laneDependencyCheck(lane, n, m, tasksInside);
+                }*/
             }
         }
         return dependency;
     }
 
-    public int laneDependencyCheck(Lane lane, Task n, Task m, ArrayList<Task> tasksInside) {
+    /*public int laneDependencyCheck(Lane lane, Task n, Task m, ArrayList<Task> tasksInside) {
         int counter = 1;
         getTasksInside(lane, tasksInside);
 
@@ -570,6 +614,30 @@ public class Modularizer {
                     counter = counter + laneDependencyCheck(l, n, m, insideChildLane);
                 }
             }
+            return counter;
+        }
+        else {
+            return 0;
+        }
+    }*/
+
+    public int laneDependencyCheck(LaneSet laneSet, Task n, Task m, ArrayList<Task> tasksInside) {
+        int counter = 1;
+        for (Lane lane:laneSet.getLanes()) {
+            getTasksInside(lane, tasksInside);
+            ArrayList<Task> insideThisLane = new ArrayList<>();
+            getTasksInside(lane, insideThisLane);
+            if (insideThisLane.contains(n) && insideThisLane.contains(m)) {
+                counter = 2;
+            }
+
+            ArrayList<Task> insideChildLane = new ArrayList<>();
+            LaneSet childLaneSet = lane.getChildLaneSet();
+            if (childLaneSet != null) {
+                counter = 1 + laneDependencyCheck(childLaneSet, n, m, insideChildLane);
+            }
+        }
+        if (tasksInside.contains(n) && tasksInside.contains(m)) {
             return counter;
         }
         else {

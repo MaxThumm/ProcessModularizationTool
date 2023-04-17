@@ -40,8 +40,8 @@ public class HelloApplication extends Application {
         String pathName = scanner.nextLine();  // Read user input
          */
 
-        //String pathName = "/Users/maxl/Downloads/How2Travel (Kopie).bpmn";
-        String pathName = "/Users/maxl/Downloads/How2Travel (Kopie)-6.bpmn";
+        //String pathName = "/Users/maxl/Library/CloudStorage/OneDrive-UniversitätSt.Gallen/Dokumente/Universität/Master/Masterarbeit/05 Evaluation/01 BPMN Modelle/KSB/Diagram_2023-04-13 14-51-52/Diagram_2023-04-13 14-51-52.bpmn";
+        String pathName = "/Users/maxl/Downloads/How2Travel (Kopie)-7.bpmn";
 
         Modularizer modularizer = new Modularizer(pathName);
 
@@ -65,7 +65,18 @@ public class HelloApplication extends Application {
         modularizer.addDataDependencies();
         //modularizer.exportDataDependencies("How2Travel (Kopie)-6_dataDependencies.csv");
 
-        modularizer.exportCombinedDependencies("How2Travel (Kopie)-6_dependencies.csv");
+        /*modularizer.exportTimeDependencies("Diagram_2023-04-13 14-51-52_time-dependencies.csv");
+        modularizer.exportLaneDependencies("Diagram_2023-04-13 14-51-52_lane-dependencies.csv");
+        modularizer.exportDataDependencies("Diagram_2023-04-13 14-51-52_data-dependencies.csv");
+        modularizer.exportInputDependencies("Diagram_2023-04-13 14-51-52_input-dependencies.csv");
+
+        modularizer.exportCombinedDependencies("Diagram_2023-04-13 14-51-52_dependencies.csv");*/
+
+        modularizer.exportTimeDependencies("How2Travel (Kopie)-7_timeDependencies.csv");
+        modularizer.exportLaneDependencies("How2Travel (Kopie)-7_laneDependencies.csv");
+        modularizer.exportDataDependencies("How2Travel (Kopie)-7_dataDependencies.csv");
+        modularizer.exportInputDependencies("How2Travel (Kopie)-7_inputDependencies.csv");
+        modularizer.exportCombinedDependencies("How2Travel (Kopie)-7_dependencies.csv");
 
 
 

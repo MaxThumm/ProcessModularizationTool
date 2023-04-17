@@ -6,7 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="7ae9a8c5-b030-4654-b255-46dd8955db1f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/com/example/processmodularizationtool/hello-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/example/processmodularizationtool/hello-view.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/HelloApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/HelloApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/Modularizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/Modularizer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,6 +89,8 @@
       <workItem from="1680253971071" duration="13984000" />
       <workItem from="1680447084742" duration="12897000" />
       <workItem from="1680691264473" duration="1259000" />
+      <workItem from="1681639980116" duration="7261000" />
+      <workItem from="1681719181475" duration="4840000" />
     </task>
     <servers />
   </component>
