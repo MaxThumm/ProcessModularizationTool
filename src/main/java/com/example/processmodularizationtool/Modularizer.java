@@ -525,6 +525,9 @@ public class Modularizer {
         boolean inSameLane;
         for (Participant p:participants) {
             Process process = p.getProcess();
+            if (process == null) {
+                continue;
+            }
             Collection<LaneSet> laneSets = process.getLaneSets();
             for (LaneSet laneSet:laneSets) {
                 Collection<Lane> lanes1 = laneSet.getLanes();
@@ -586,6 +589,9 @@ public class Modularizer {
         boolean inSameLane;
         for (Participant p:participants) {
             Process process = p.getProcess();
+            if (process == null) {
+                continue;
+            }
             ArrayList<Task> tasksInside = new ArrayList<>();
             Collection<LaneSet> laneSets = process.getLaneSets();
             for (LaneSet laneSet:laneSets) {
