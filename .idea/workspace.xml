@@ -92,6 +92,8 @@
       <workItem from="1681639980116" duration="7261000" />
       <workItem from="1681719181475" duration="5439000" />
       <workItem from="1681812228077" duration="2516000" />
+      <workItem from="1681999089683" duration="638000" />
+      <workItem from="1682581260364" duration="18098000" />
     </task>
     <servers />
   </component>
@@ -115,6 +117,10 @@
         <breakpoint enabled="true" type="java-exception">
           <properties class="java.lang.NullPointerException" package="java.lang" />
           <option name="timeStamp" value="1" />
+        </breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.util.ConcurrentModificationException" package="java.util" />
+          <option name="timeStamp" value="2" />
         </breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -41,7 +41,7 @@ public class HelloApplication extends Application {
          */
 
         //String pathName = "/Users/maxl/Library/CloudStorage/OneDrive-UniversitätSt.Gallen/Dokumente/Universität/Master/Masterarbeit/05 Evaluation/01 BPMN Modelle/KSB/Diagram_2023-04-13 14-51-52/Diagram_2023-04-13 14-51-52.bpmn";
-        String pathName = "/Users/maxl/Library/CloudStorage/OneDrive-UniversitätSt.Gallen/Dokumente/Universität/Master/Masterarbeit/05 Evaluation/01 BPMN Modelle/Beispiel/Simplified emergency care process.bpmn";
+        String pathName = "/Users/maxl/Library/CloudStorage/OneDrive-UniversitätSt.Gallen/Dokumente/Universität/Master/Masterarbeit/05 Evaluation/01 BPMN Modelle/KSGB/Operation stationar (AC).bpmn";
 
         Modularizer modularizer = new Modularizer(pathName);
 
@@ -72,11 +72,11 @@ public class HelloApplication extends Application {
 
         modularizer.exportCombinedDependencies("Diagram_2023-04-13 14-51-52_dependencies.csv");*/
 
-        modularizer.exportTimeDependencies("Simplified emergency care process_timeDependencies.csv");
-        modularizer.exportLaneDependencies("Simplified emergency care process_laneDependencies.csv");
-        modularizer.exportDataDependencies("Simplified emergency care process_dataDependencies.csv");
-        modularizer.exportInputDependencies("Simplified emergency care process_inputDependencies.csv");
-        modularizer.exportCombinedDependencies("Simplified emergency care process_dependencies.csv");
+        modularizer.exportTimeDependencies("Operation stationar (AC)_timeDependencies.csv");
+        modularizer.exportLaneDependencies("Operation stationar (AC)_laneDependencies.csv");
+        modularizer.exportDataDependencies("Operation stationar (AC)_dataDependencies.csv");
+        modularizer.exportInputDependencies("Operation stationar (AC)_inputDependencies.csv");
+        modularizer.exportCombinedDependencies("Operation stationar (AC)_dependencies.csv");
 
 
 

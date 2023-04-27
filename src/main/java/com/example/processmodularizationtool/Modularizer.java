@@ -62,7 +62,8 @@ public class Modularizer {
 
         createParticipantList();
         createLaneList();
-        createTaskList();
+        //createTaskList();
+        createOrderedTaskList();
         createMessageFlowList();
 
         dependencies = new int[tasks.size()][tasks.size()]; //initiate dependency matrix with length and width of number of tasks
@@ -705,36 +706,42 @@ public class Modularizer {
         }
     }
 
-    public List<List> getTasksInOrder() {
+    /*public List<List> getTasksInOrder() {
         ArrayList<List> listList = new ArrayList<>();
         for (Participant participant:participants) {
             listList.add(getTasksFromPool(participant));
         }
         return listList;
+    }*/
+
+    public void createOrderedTaskList (){
+        for (Participant participant:participants) {
+            getTasksFromPool(participant);
+        }
     }
 
-    public ArrayList<Task> getTasksFromPool(Participant participant) {
-        System.out.print(participant.getName() + ": ");
+    public void getTasksFromPool(Participant participant) {
+        //System.out.print(participant.getName() + ": ");
         Collection<FlowElement> flowElements = participant.getProcess().getFlowElements();
-        /*for (FlowElement f:flowElements) {
+        for (FlowElement f:flowElements) {
             System.out.println(f.getName());
-        }*/
+        }
         StartEvent start = null;
         for (FlowElement flowElement:flowElements) {
             if(flowElement instanceof StartEvent) {
                 start = (StartEvent) flowElement;
-                System.out.print("(StartEvent: " + start.getName() + ") ");
+                //System.out.print("(StartEvent: " + start.getName() + ") ");
             }
         }
-        ArrayList<Task> tasks1 = new ArrayList<>();       //getFollowingTasks(start);
+        //ArrayList<Task> tasks1 = new ArrayList<>();       //getFollowingTasks(start);
         List<FlowNode> following = start.getSucceedingNodes().list();
         int counter = 0;
         while (following.size() > counter) {
             int i = following.size();
             while (counter < i) {                //for (FlowNode flowNode:following) {
-                if(following.get(counter) instanceof Task && tasks1.contains(following.get(counter)) == false) {
-                    System.out.print(following.get(counter).getName() + ", ");
-                    tasks1.add((Task)following.get(counter));
+                if(following.get(counter) instanceof Task && tasks.contains(following.get(counter)) == false) {
+                    //System.out.print(following.get(counter).getName() + ", ");
+                    tasks.add((Task)following.get(counter));
                 }
                 for (FlowNode f:following.get(counter).getSucceedingNodes().list()) {
                     if (following.contains(f) == false) {
@@ -752,13 +759,39 @@ public class Modularizer {
             System.out.print(task.getName() + ", ");
         }*/
 
-        /*List<Task> tasks1 = start.getSucceedingNodes().filterByType(Task.class).list();
+        List<Task> tasks1 = start.getSucceedingNodes().filterByType(Task.class).list();
         for(Task task:tasks1) {
             System.out.print(task.getName() + ", ");
-        }*/
-        System.out.println();
-        System.out.println();
-        return tasks1;
+        }
+
+    }
+
+    public void getTasksFromPool2 (Participant participant) {
+        Collection<FlowElement> flowElements = participant.getProcess().getFlowElements();
+
+        StartEvent start = null;
+        for (FlowElement flowElement:flowElements) {
+            if(flowElement instanceof StartEvent) {
+                start = (StartEvent) flowElement;
+            }
+        }
+        getSucceedingTasks(start);
+    }
+
+    public void getSucceedingTasks(FlowNode flowNode) {
+        ArrayList<FlowNode> visited = new ArrayList<>();
+        if (flowNode.getSucceedingNodes().list().size() != 0) {
+            for (FlowNode f:flowNode.getSucceedingNodes().list()) {
+                if (visited.contains(f)) {
+                    continue;
+                }
+                visited.add(f);
+                if (f instanceof Task) {
+                    tasks.add((Task) f);
+                }
+                getSucceedingTasks(f);
+            }
+        }
     }
 
     /*public ArrayList<Task> getFollowingTasks(FlowNode flowNode) {
@@ -803,23 +836,49 @@ public class Modularizer {
         getTasksFromPool(participant);
     }
 
-    public void checkTimeDependency() {
+    public void checkTimeDependency2() {
         Collection<ModelElementInstance> flowNodeInstances = modelInstance.getModelElementsByType(modelInstance.getModel().getType(FlowNode.class));
         ArrayList<FlowNode> allFlowNodes = new ArrayList<>();
         for (ModelElementInstance x:flowNodeInstances) {
             allFlowNodes.add((FlowNode) x);
         }
-        ArrayList<Task> timeDependentTasks = new ArrayList<>();
+
         for (FlowNode flowNode:allFlowNodes) {
+            ArrayList<Task> timeDependentTasks = new ArrayList<>();
             if (flowNode instanceof ParallelGateway && flowNode.getPreviousNodes().list().size() > 1) {
+                ArrayList<FlowNode> visited = new ArrayList<>();
+                ArrayList<FlowNode> multiples = new ArrayList<>();
                 if (getFirstTaskFollowing(flowNode) != null) {
+                    visited.add(getFirstTaskFollowing(flowNode));
                     timeDependentTasks.add(getFirstTaskFollowing(flowNode));
                 }
-                getTasksAfterGateway(flowNode, timeDependentTasks);
+                getTasksAfterGateway(flowNode, timeDependentTasks, visited, multiples);
             }
+
+            for (int i = 0; i < tasks.size(); i++) {
+                for (int j = 0; j < tasks.size(); j++) {
+                    if (timeDependentTasks.contains(tasks.get(i)) && timeDependentTasks.contains(tasks.get(j))) {
+                        timeDependencies[i][j] = 1;
+                    }
+                }
+            }
+
+            /*for (int i = 0; i < tasks.size(); i++) {
+                for (Task n:timeDependentTasks) {
+                    if (n.getId().equals(tasks.get(i).getId())) {
+                        for (int j = 0; j < tasks.size(); j++) {
+                            for (Task m:timeDependentTasks) {
+                                if (m.getId().equals(tasks.get(j).getId()) && i != j) {
+                                    timeDependencies[i][j] = 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }*/
         }
 
-        for (int i = 0; i < timeDependentTasks.size(); i++) {
+        /*for (int i = 0; i < timeDependentTasks.size(); i++) {
             int counter = 0;
             String taskToRemove = null;
             for (int j = 0; j < timeDependentTasks.size(); j++) {
@@ -837,60 +896,152 @@ public class Modularizer {
                     }
                 }
             }
+        }*/
+
+
+    }
+
+
+    public void checkTimeDependency() {
+        Collection<ModelElementInstance> flowNodeInstances = modelInstance.getModelElementsByType(modelInstance.getModel().getType(FlowNode.class));
+        ArrayList<FlowNode> allFlowNodes = new ArrayList<>();
+        for (ModelElementInstance x:flowNodeInstances) {
+            allFlowNodes.add((FlowNode) x);
         }
 
-        for (int i = 0; i < tasks.size(); i++) {
-            for (Task n:timeDependentTasks) {
-                if (n.getId().equals(tasks.get(i).getId())) {
-                    for (int j = 0; j < tasks.size(); j++) {
-                        for (Task m:timeDependentTasks) {
-                            if (m.getId().equals(tasks.get(j).getId()) && i != j) {
-                                timeDependencies[i][j] = 1;
-                            }
-                        }
+        for (FlowNode flowNode:allFlowNodes) {
+            ArrayList<Task> timeDependentTasks = new ArrayList<>();
+            if (flowNode instanceof ParallelGateway && flowNode.getPreviousNodes().list().size() > 1) {
+                ArrayList<FlowNode> visited = new ArrayList<>();
+                if (getFirstTaskFollowing(flowNode) != null) {
+                    visited.add(getFirstTaskFollowing(flowNode));
+                    timeDependentTasks.add(getFirstTaskFollowing(flowNode));
+                }
+
+                ArrayList<FlowNode> sourceNodes = getPossibleSourceNodes(flowNode);
+
+                for (FlowNode f:flowNode.getPreviousNodes().list()) {
+                    getTasksAfterGateway2(f, timeDependentTasks, visited, sourceNodes);
+                }
+            }
+
+            for (int i = 0; i < tasks.size(); i++) {
+                for (int j = 0; j < tasks.size(); j++) {
+                    if (i != j && timeDependentTasks.contains(tasks.get(i)) && timeDependentTasks.contains(tasks.get(j))) {
+                        timeDependencies[i][j] = 1;
                     }
                 }
             }
         }
     }
 
-    /*public void getTasksAfterGateway(FlowNode flowNode) {
-        ArrayList<Gateway> gateways = new ArrayList<>();
-        ArrayList<Task> tasksBetweenGateways = new ArrayList<>();
-        if (flowNode  instanceof Task) {
-            tasksBetweenGateways.add((Task) flowNode);
-        }
-        for (FlowNode f:flowNode.getPreviousNodes().list()) {
-            if (flowNode.getPreviousNodes().list)
-            if (f instanceof Task) {
-                tasksBetweenGateways.add((Task) f);
-            }
-            else if (f instanceof Gateway && gateways.contains(f) == true) {
-                break;
-            }
-            else if (f instanceof Gateway && gateways.contains(f) == false) {
-                gateways.add((Gateway) f);
-            }
-
-        }
-    }*/
-
-    public void getTasksAfterGateway(FlowNode flowNode, ArrayList<Task> tasksBetweenGateways) {
+    public ArrayList<FlowNode> getPossibleSourceNodes(FlowNode flowNode) {
+        ArrayList<FlowNode> visitedByAll = new ArrayList<>();
+        ArrayList<FlowNode> possibleSourceNodes = new ArrayList<>();
         if (flowNode.getPreviousNodes().list().size() != 0) {
-            for (FlowNode f:flowNode.getPreviousNodes().list()) {
-                if (f instanceof Task) {
-                    int counter = 0;
-                    for (Task t:tasksBetweenGateways) {
-                        if (f.getId().equals(t.getId())) {
-                            counter++;
-                        }
-                    }
-                    if (counter > 20) {
+            for (int i = 0; i < flowNode.getPreviousNodes().list().size(); i++) {
+                ArrayList<FlowNode> visited = new ArrayList<>();
+                visited.add(flowNode.getPreviousNodes().list().get(i));
+                addPreviousFlowNodes(flowNode.getPreviousNodes().list().get(i), visited);
+
+                for(FlowNode f:visited) {
+                    if(visitedByAll.contains(f)) {
+                        possibleSourceNodes.add(f);
                         continue;
                     }
+                    visitedByAll.add(f);
+                }
+                /*if (i == 0) {
+                    for (FlowNode f:visited) {
+                        visitedByAll.add(f);
+                    }
+                }*/
+
+                for (int j = 0; j < possibleSourceNodes.size(); j++) {
+                    if (visited.contains(possibleSourceNodes.get(j)) == false) {
+                        visitedByAll.remove(visitedByAll.get(j));
+                    }
+                }
+
+                /*for (FlowNode f:visitedByAll) {
+                    if (!visited.contains(f)) {
+                        visitedByAll.remove(f);
+                    }
+                }*/
+            }
+        }
+        return possibleSourceNodes;
+    }
+
+    public void addPreviousFlowNodes(FlowNode flowNode, ArrayList<FlowNode> visited) {
+        if (flowNode.getPreviousNodes().list().size() != 0) {
+            for (FlowNode f:flowNode.getPreviousNodes().list()) {
+                if (visited.contains(f)) {
+                    continue;
+                }
+                visited.add(f);
+
+                addPreviousFlowNodes(f, visited);
+            }
+        }
+    }
+
+    public void getTasksAfterGateway(FlowNode flowNode, ArrayList<Task> tasksBetweenGateways, ArrayList<FlowNode> visited, ArrayList<FlowNode> multiples) {
+        if (flowNode.getPreviousNodes().list().size() != 0) {
+            for (FlowNode f:flowNode.getPreviousNodes().list()) {
+                if (visited.contains(f)) {
+                    if (multiples.contains(f) == false) {
+                        multiples.add(f);
+                    }
+
+                    continue;
+                }
+                visited.add(f);
+                if (f instanceof Task) {
                     tasksBetweenGateways.add((Task) f);
                 }
-                getTasksAfterGateway(f, tasksBetweenGateways);
+                //getTasksAfterGateway(f, tasksBetweenGateways, visited);
+            }
+        }
+
+        if (flowNode.getPreviousNodes().list().size() != 0) {
+            for (FlowNode f:flowNode.getPreviousNodes().list()) {
+                int counter = 0;
+                for (int i = 0; i < visited.size(); i++) {
+                    if (visited.get(i).getId().equals(flowNode.getId())) {
+                        counter++;
+                    }
+                }
+                if (counter > 20) {
+                    for (int i = 0; i < visited.size(); i++) {
+                        if (i != visited.indexOf(flowNode) && visited.get(i).getId().equals(flowNode.getId())) {
+                            visited.remove(i);
+                        }
+                    }
+                    continue;
+                }
+
+                visited.add(f);
+                if (f instanceof Task) {
+                    tasksBetweenGateways.add((Task) f);
+                }
+                //getTasksAfterGateway(f, tasksBetweenGateways, visited);
+            }
+        }
+
+    }
+
+    public void getTasksAfterGateway2(FlowNode flowNode, ArrayList<Task> tasksBetweenGateways, ArrayList<FlowNode> visited, ArrayList<FlowNode> sourceNodes) {
+        if (visited.contains(flowNode) == false && sourceNodes.contains(flowNode) == false) {
+            visited.add(flowNode);
+            if (flowNode instanceof Task) {
+                tasksBetweenGateways.add((Task) flowNode);
+            }
+
+            if (flowNode.getPreviousNodes().list().size() != 0) {
+                for (FlowNode f:flowNode.getPreviousNodes().list()) {
+                    getTasksAfterGateway2(f, tasksBetweenGateways, visited, sourceNodes);
+                }
             }
         }
     }
@@ -903,6 +1054,9 @@ public class Modularizer {
                     firstTask = (Task) f;
                 }
                 else if (f instanceof CatchEvent) {
+                    continue;
+                }
+                else if (f instanceof Gateway) {
                     continue;
                 }
                 else {
