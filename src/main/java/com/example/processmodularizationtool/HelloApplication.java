@@ -40,8 +40,8 @@ public class HelloApplication extends Application {
         String pathName = scanner.nextLine();  // Read user input
          */
 
-        //String pathName = "/Users/maxl/Library/CloudStorage/OneDrive-UniversitätSt.Gallen/Dokumente/Universität/Master/Masterarbeit/05 Evaluation/01 BPMN Modelle/KSB/Diagram_2023-04-13 14-51-52/Diagram_2023-04-13 14-51-52.bpmn";
-        String pathName = "/Users/maxl/Library/CloudStorage/OneDrive-UniversitätSt.Gallen/Dokumente/Universität/Master/Masterarbeit/05 Evaluation/01 BPMN Modelle/KSGB/Operation stationar (AC).bpmn";
+        String pathName = "/Users/maxl/Library/CloudStorage/OneDrive-UniversitätSt.Gallen/Dokumente/Universität/Master/Masterarbeit/05 Evaluation/01 BPMN Modelle/KSB/Diagram_2023-04-13 14-50-56/Diagram_2023-04-13 14-50-56.bpmn";
+        //String pathName = "/Users/maxl/Library/CloudStorage/OneDrive-UniversitätSt.Gallen/Dokumente/Universität/Master/Masterarbeit/05 Evaluation/01 BPMN Modelle/KSGB/Operation stationar (AC).bpmn";
 
         Modularizer modularizer = new Modularizer(pathName);
 
@@ -65,62 +65,21 @@ public class HelloApplication extends Application {
         modularizer.addDataDependencies();
         //modularizer.exportDataDependencies("How2Travel (Kopie)-6_dataDependencies.csv");
 
-        /*modularizer.exportTimeDependencies("Diagram_2023-04-13 14-51-52_time-dependencies.csv");
-        modularizer.exportLaneDependencies("Diagram_2023-04-13 14-51-52_lane-dependencies.csv");
-        modularizer.exportDataDependencies("Diagram_2023-04-13 14-51-52_data-dependencies.csv");
-        modularizer.exportInputDependencies("Diagram_2023-04-13 14-51-52_input-dependencies.csv");
+        modularizer.exportTimeDependencies("Diagram_2023-04-13 14-50-56_time-dependencies.csv");
+        modularizer.exportLaneDependencies("Diagram_2023-04-13 14-50-56_lane-dependencies.csv");
+        modularizer.exportDataDependencies("Diagram_2023-04-13 14-50-56_data-dependencies.csv");
+        modularizer.exportInputDependencies("Diagram_2023-04-13 14-50-56_input-dependencies.csv");
+        modularizer.exportCombinedDependencies("Diagram_2023-04-13 14-50-56_dependencies.csv");
 
-        modularizer.exportCombinedDependencies("Diagram_2023-04-13 14-51-52_dependencies.csv");*/
-
-        modularizer.exportTimeDependencies("Operation stationar (AC)_timeDependencies.csv");
+        /*modularizer.exportTimeDependencies("Operation stationar (AC)_timeDependencies.csv");
         modularizer.exportLaneDependencies("Operation stationar (AC)_laneDependencies.csv");
         modularizer.exportDataDependencies("Operation stationar (AC)_dataDependencies.csv");
         modularizer.exportInputDependencies("Operation stationar (AC)_inputDependencies.csv");
-        modularizer.exportCombinedDependencies("Operation stationar (AC)_dependencies.csv");
+        modularizer.exportCombinedDependencies("Operation stationar (AC)_dependencies.csv");*/
 
 
 
 
-
-
-
-
-        /*
-        ModelElementType taskType = modelInstance.getModel().getType(Task.class);
-        Collection<ModelElementInstance> taskInstances = modelInstance.getModelElementsByType(taskType);
-        System.out.println(taskInstances.size());
-
-        ModelElementType participantType = modelInstance.getModel().getType(Participant.class);
-        Collection<ModelElementInstance> participantInstances = modelInstance.getModelElementsByType(participantType);
-        System.out.println(participantInstances.size());
-
-        ArrayList<Task> tasks = new ArrayList<>();
-        for (ModelElementInstance t:taskInstances) {
-            tasks.add(createTask(t));
-        }
-
-        System.out.println(tasks.size());
-
-        ModelElementType laneType = modelInstance.getModel().getType(Lane.class);
-        Collection<ModelElementInstance> laneInstances = modelInstance.getModelElementsByType(laneType);
-        System.out.println(laneInstances.size());
-
-        int[][] dependencies = new int[tasks.size()][tasks.size()];
-
-        for (int i = 0; i < tasks.size(); i++) {
-            for (int j = 0; j < tasks.size(); j++) {
-                if (i != j && checkKnowHowSpecificity(tasks.get(i), tasks.get(j), laneInstances)) {
-                    dependencies[i][j]++;
-                }
-            }
-        }
-
-        int counter = 0;
-        for (Task task:tasks) {
-            counter++;
-            System.out.println("Task " + counter + ": Name '" + task.getName() + "' | ID '" + task.getId() + "'");
-        }
-         */
     }
 
 

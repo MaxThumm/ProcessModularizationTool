@@ -723,9 +723,7 @@ public class Modularizer {
     public void getTasksFromPool(Participant participant) {
         //System.out.print(participant.getName() + ": ");
         Collection<FlowElement> flowElements = participant.getProcess().getFlowElements();
-        for (FlowElement f:flowElements) {
-            System.out.println(f.getName());
-        }
+
         StartEvent start = null;
         for (FlowElement flowElement:flowElements) {
             if(flowElement instanceof StartEvent) {
@@ -760,9 +758,7 @@ public class Modularizer {
         }*/
 
         List<Task> tasks1 = start.getSucceedingNodes().filterByType(Task.class).list();
-        for(Task task:tasks1) {
-            System.out.print(task.getName() + ", ");
-        }
+
 
     }
 
