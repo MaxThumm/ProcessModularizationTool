@@ -32,7 +32,7 @@ public class Modularizer {
     private Collection<ModelElementInstance> messageFlowInstances;
 
     private ArrayList<Participant> participants; //ArrayList of participants
-    private ArrayList<Lane> lanes; //ArrayList of lanes
+    private ArrayList<Lane> lanes; //ArrayList of lanes // kann weg
     private ArrayList<Task> tasks; //ArrayList of tasks
 
     private ArrayList<MessageFlow> messageFlows;
@@ -473,30 +473,7 @@ public class Modularizer {
         }
     }
 
-    public void addKnowHowDependencies() {
-        for (int i = 0; i < tasks.size(); i++) {
-            for (int j = 0; j < tasks.size(); j++) {
-                if (i != j) {
-                    laneDependencies[i][j] = laneDependencies[i][j] + laneCheck(tasks.get(i), tasks.get(j));
-                }
-            }
-        }
-    }
 
-
-    public void checkInformationDependency(Task n, Task m) {
-        boolean hasInformationDependency = false;
-        
-    }
-
-
-    //public void checkLane
-
-    public void checkLaneDependencies() {
-        for (Participant p: participants) {
-
-        }
-    }
 
     /*public void lanePrint() {
         for (Participant p:participants) {
@@ -585,20 +562,56 @@ public class Modularizer {
         }
     }
 
-    public int checkLaneDependency (Task n, Task m) {
+    public int checkLaneDependency2 (Task n, Task m) {
         int dependency = 0;
-        boolean inSameLane;
+        //boolean inSameLane;
         for (Participant p:participants) {
             Process process = p.getProcess();
             if (process == null) {
+                System.out.println(p.getName() + " skipped");
                 continue;
             }
-            ArrayList<Task> tasksInside = new ArrayList<>();
+            ArrayList<Task> tasksInsidePool = new ArrayList<>();
             Collection<LaneSet> laneSets = process.getLaneSets();
             for (LaneSet laneSet:laneSets) {
                 //ArrayList<Task> tasksInside = new ArrayList<>();
                 if (laneSet != null) {
-                    dependency = laneDependencyCheck(laneSet, n, m, tasksInside);
+                    dependency = dependency + laneDependencyCheck2(laneSet, n, m, tasksInsidePool);
+                }
+                /*Collection<Lane> lanes1 = laneSet.getLanes();
+                for (Lane lane:lanes1) {
+                    dependency = laneDependencyCheck(lane, n, m, tasksInside);
+                }*/
+            }
+        }
+        return dependency;
+    }
+
+    public int checkLaneDependency (Task n, Task m) {
+        int dependency = 0;
+        //boolean inSameLane;
+        for (Participant p:participants) {
+            Process process = p.getProcess();
+            if (process == null) {
+                System.out.println(p.getName() + " skipped");
+                continue;
+            }
+            ArrayList<Task> tasksInsidePool = new ArrayList<>();
+            Collection<LaneSet> laneSets = process.getLaneSets();
+            for (LaneSet laneSet:laneSets) {
+                //ArrayList<Task> tasksInside = new ArrayList<>();
+                if (laneSet != null) {
+                    for (Lane lane:laneSet.getLanes()) {
+                        getTasksInside(lane, tasksInsidePool);
+                    }
+                    if (tasksInsidePool.contains(n) && tasksInsidePool.contains(m)) {
+                        dependency = 1;
+                        if (laneSet.getLanes().size() > 1) {
+                            for (Lane lane:laneSet.getLanes()) {
+                                dependency = dependency + laneDependencyCheck(lane, n, m);
+                            }
+                        }
+                    }
                 }
                 /*Collection<Lane> lanes1 = laneSet.getLanes();
                 for (Lane lane:lanes1) {
@@ -628,20 +641,39 @@ public class Modularizer {
         }
     }*/
 
-    public int laneDependencyCheck(LaneSet laneSet, Task n, Task m, ArrayList<Task> tasksInside) {
+
+    public int laneDependencyCheck(Lane lane, Task n, Task m) {
+        int counter = 0;
+        ArrayList<Task> insideThisLane = new ArrayList<>();
+        getTasksInside(lane, insideThisLane);
+        if (insideThisLane.contains(n) && insideThisLane.contains(m)) {
+            counter = 1;
+
+        }
+
+        LaneSet childLaneSet = lane.getChildLaneSet();
+        if (childLaneSet != null) {
+            for (Lane l:childLaneSet.getLanes()) {
+                counter = counter + laneDependencyCheck(l, n, m);
+            }
+        }
+        return counter;
+    }
+
+    public int laneDependencyCheck2(LaneSet laneSet, Task n, Task m, ArrayList<Task> tasksInside) {
         int counter = 1;
         for (Lane lane:laneSet.getLanes()) {
             getTasksInside(lane, tasksInside);
             ArrayList<Task> insideThisLane = new ArrayList<>();
             getTasksInside(lane, insideThisLane);
-            if (insideThisLane.contains(n) && insideThisLane.contains(m)) {
+            if (insideThisLane.contains(n) && insideThisLane.contains(m) && laneSet.getLanes().size() > 1) {
                 counter = 2;
             }
 
             ArrayList<Task> insideChildLane = new ArrayList<>();
             LaneSet childLaneSet = lane.getChildLaneSet();
             if (childLaneSet != null) {
-                counter = 1 + laneDependencyCheck(childLaneSet, n, m, insideChildLane);
+                counter = counter + laneDependencyCheck2(childLaneSet, n, m, insideChildLane);
             }
         }
         if (tasksInside.contains(n) && tasksInside.contains(m)) {
