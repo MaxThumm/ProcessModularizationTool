@@ -3,6 +3,7 @@ module com.example.processmodularizationtool {
     requires javafx.fxml;
     requires camunda.bpmn.model;
     requires camunda.xml.model;
+    requires java.desktop;
 
 
     opens com.example.processmodularizationtool to javafx.fxml;

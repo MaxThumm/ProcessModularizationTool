@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javax.swing.*;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.bpm.model.bpmn.instance.*;
@@ -40,10 +41,23 @@ public class HelloApplication extends Application {
         String pathName = scanner.nextLine();  // Read user input
          */
 
+        //JOptionPane inputDialog = new JOPtionPane;
+
         //String pathName = "/Users/maxl/Library/CloudStorage/OneDrive-UniversitätSt.Gallen/Dokumente/Universität/Master/Masterarbeit/05 Evaluation/01 BPMN Modelle/KSB/Diagram_2023-04-13 14-50-56/Diagram_2023-04-13 14-50-56.bpmn";
         //String pathName = "/Users/maxl/Library/CloudStorage/OneDrive-UniversitätSt.Gallen/Dokumente/Universität/Master/Masterarbeit/05 Evaluation/01 BPMN Modelle/KSGB/Operation stationar (AC).bpmn";
         //String pathName = "/Users/maxl/Library/CloudStorage/OneDrive-UniversitätSt.Gallen/Dokumente/Universität/Master/Masterarbeit/05 Evaluation/02 Funktional/How2Travel/How2Travel (Kopie)-7.bpmn";
-        String pathName = "How2Travel (Kopie)-7.bpmn";
+        String pathName = JOptionPane.showInputDialog("Please enter the path name of the file desired .bpmn file.\r\nIf the file is stored in the folder of this program (/ProcessModularizationTool) entering the file name is sufficient.");
+
+        while (pathName.endsWith(".bpmn") == false) {
+            pathName = JOptionPane.showInputDialog("No .bpmn file entered!\r\nPlease enter the path name of the file desired .bpmn file. (e.g. 'C:/testFile.bpmn')\r\nIf the file is stored in the folder of this program (/ProcessModularizationTool) entering the file name is sufficient.");
+            if (pathName.endsWith(".bpmn")) {
+                break;
+            }
+        }
+        String exportName = JOptionPane.showInputDialog("Please enter export file name prefix.\r\n(Could be a part of the input file name or any destinct identifier)");
+        while (exportName.equals("")) {
+            exportName = JOptionPane.showInputDialog("Export file name cannot be empty!\r\nPlease enter export file name prefix.\r\n(Could be a part of the input file name or any destinct identifier)");
+        }
 
         Modularizer modularizer = new Modularizer(pathName);
 
@@ -79,14 +93,19 @@ public class HelloApplication extends Application {
         modularizer.exportInputDependencies("Operation stationar (AC)_inputDependencies.csv");
         modularizer.exportCombinedDependencies("Operation stationar (AC)_dependencies.csv");*/
 
-        modularizer.exportTimeDependencies("How2Travel (Kopie)-7_timeDependencies.csv");
+        /*modularizer.exportTimeDependencies("How2Travel (Kopie)-7_timeDependencies.csv");
         modularizer.exportLaneDependencies("How2Travel (Kopie)-7_laneDependencies.csv");
         modularizer.exportDataDependencies("How2Travel (Kopie)-7_dataDependencies.csv");
         modularizer.exportInputDependencies("How2Travel (Kopie)-7_inputDependencies.csv");
-        modularizer.exportCombinedDependencies("How2Travel (Kopie)-7_dependencies.csv");
+        modularizer.exportCombinedDependencies("How2Travel (Kopie)-7_dependencies.csv");*/
 
+        modularizer.exportTimeDependencies(exportName + "_timeDependencies.csv");
+        modularizer.exportLaneDependencies(exportName + "_laneDependencies.csv");
+        modularizer.exportDataDependencies(exportName + "_dataDependencies.csv");
+        modularizer.exportInputDependencies(exportName + "_inputDependencies.csv");
+        modularizer.exportCombinedDependencies(exportName + "_combinedDependencies.csv");
 
-
+        System.exit(0);
 
     }
 
