@@ -41,8 +41,6 @@ public class HelloApplication extends Application {
         String pathName = scanner.nextLine();  // Read user input
          */
 
-        //JOptionPane inputDialog = new JOPtionPane;
-
         //String pathName = "/Users/maxl/Library/CloudStorage/OneDrive-UniversitätSt.Gallen/Dokumente/Universität/Master/Masterarbeit/05 Evaluation/01 BPMN Modelle/KSB/Diagram_2023-04-13 14-50-56/Diagram_2023-04-13 14-50-56.bpmn";
         //String pathName = "/Users/maxl/Library/CloudStorage/OneDrive-UniversitätSt.Gallen/Dokumente/Universität/Master/Masterarbeit/05 Evaluation/01 BPMN Modelle/KSGB/Operation stationar (AC).bpmn";
         //String pathName = "/Users/maxl/Library/CloudStorage/OneDrive-UniversitätSt.Gallen/Dokumente/Universität/Master/Masterarbeit/05 Evaluation/02 Funktional/How2Travel/How2Travel (Kopie)-7.bpmn";

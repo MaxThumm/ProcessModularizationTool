@@ -6,12 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="7ae9a8c5-b030-4654-b255-46dd8955db1f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/How2Travel (Kopie)-7_dataDependencies.csv" beforeDir="false" afterPath="$PROJECT_DIR$/How2Travel (Kopie)-7_dataDependencies.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/How2Travel (Kopie)-7_inputDependencies.csv" beforeDir="false" afterPath="$PROJECT_DIR$/How2Travel (Kopie)-7_inputDependencies.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/How2Travel (Kopie)-7_laneDependencies.csv" beforeDir="false" afterPath="$PROJECT_DIR$/How2Travel (Kopie)-7_laneDependencies.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/How2Travel (Kopie)-7_timeDependencies.csv" beforeDir="false" afterPath="$PROJECT_DIR$/How2Travel (Kopie)-7_timeDependencies.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/null_combinedDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/null_dataDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/null_inputDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/null_laneDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/null_timeDependencies.csv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/HelloApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/HelloApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/Modularizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/Modularizer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,6 +105,8 @@
       <workItem from="1682621040698" duration="2160000" />
       <workItem from="1683737963984" duration="10097000" />
       <workItem from="1683803517457" duration="3078000" />
+      <workItem from="1683806674227" duration="123000" />
+      <workItem from="1683806989331" duration="16711000" />
     </task>
     <servers />
   </component>

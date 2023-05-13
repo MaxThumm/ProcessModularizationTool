@@ -32,10 +32,10 @@ public class Modularizer {
     private Collection<ModelElementInstance> messageFlowInstances;
 
     private ArrayList<Participant> participants; //ArrayList of participants
-    private ArrayList<Lane> lanes; //ArrayList of lanes // kann weg
+    //private ArrayList<Lane> lanes; //ArrayList of lanes // kann weg
     private ArrayList<Task> tasks; //ArrayList of tasks
 
-    private ArrayList<MessageFlow> messageFlows;
+    //private ArrayList<MessageFlow> messageFlows;
 
     private int[][] dependencies; //Dependency matrix for all Tasks
 
@@ -56,15 +56,15 @@ public class Modularizer {
         messageFlowInstances = modelInstance.getModelElementsByType(modelInstance.getModel().getType(MessageFlow.class));
 
         participants = new ArrayList<>();
-        lanes = new ArrayList<>();
+        //lanes = new ArrayList<>();
         tasks = new ArrayList<>();
-        messageFlows = new ArrayList<>();
+        //messageFlows = new ArrayList<>();
 
         createParticipantList();
-        createLaneList();
+        //createLaneList();
         //createTaskList();
         createOrderedTaskList();
-        createMessageFlowList();
+        //createMessageFlowList();
 
         dependencies = new int[tasks.size()][tasks.size()]; //initiate dependency matrix with length and width of number of tasks
         laneDependencies = new int[tasks.size()][tasks.size()];
@@ -90,7 +90,7 @@ public class Modularizer {
     public void createLaneList() {
         for (ModelElementInstance l:laneInstances) {
             Lane lane = (Lane) l;
-            lanes.add(lane);
+            //lanes.add(lane);
         }
     }
 
@@ -104,7 +104,7 @@ public class Modularizer {
     public void createMessageFlowList() {
         for (ModelElementInstance m:messageFlowInstances) {
             MessageFlow messageFlow = (MessageFlow) m;
-            messageFlows.add(messageFlow);
+            //messageFlows.add(messageFlow);
         }
     }
 
@@ -552,6 +552,9 @@ public class Modularizer {
 
     }
 
+    /**
+     * Storing data dependencies between all possible combinations of two Tasks in dataDependencies Array
+     */
     public void addLaneDependencies() {
         for (int i = 0; i < tasks.size(); i++) {
             for (int j = 0; j < tasks.size(); j++) {
@@ -589,7 +592,8 @@ public class Modularizer {
 
     public int checkLaneDependency (Task n, Task m) {
         int dependency = 0;
-        //boolean inSameLane;
+
+        //Check for lane dependency for each participant
         for (Participant p:participants) {
             Process process = p.getProcess();
             if (process == null) {
@@ -642,21 +646,33 @@ public class Modularizer {
     }*/
 
 
+    /**
+     * Checking whether n & m are within lane or its subLanes
+     * @param lane
+     * @param n
+     * @param m
+     * @return 0 if n & m are not within lane or its subLanes; 1 if n & m are within lane or its subLanes + value of return for subLanes
+     */
     public int laneDependencyCheck(Lane lane, Task n, Task m) {
         int counter = 0;
+
+        //List of all Tasks within lane
         ArrayList<Task> insideThisLane = new ArrayList<>();
+        //Adding all Tasks inside lane to List
         getTasksInside(lane, insideThisLane);
+        //Checking whether n & m are in List
         if (insideThisLane.contains(n) && insideThisLane.contains(m)) {
             counter = 1;
 
-        }
-
-        LaneSet childLaneSet = lane.getChildLaneSet();
-        if (childLaneSet != null) {
-            for (Lane l:childLaneSet.getLanes()) {
-                counter = counter + laneDependencyCheck(l, n, m);
+            //Recursive call of this method for subLanes
+            LaneSet childLaneSet = lane.getChildLaneSet();
+            if (childLaneSet != null) {
+                for (Lane l:childLaneSet.getLanes()) {
+                    counter = counter + laneDependencyCheck(l, n, m);
+                }
             }
         }
+
         return counter;
     }
 
@@ -699,7 +715,7 @@ public class Modularizer {
         }
     }
 
-    public void printLaneContent() {
+    /*public void printLaneContent() {
         for (Lane lane: lanes) {
             ArrayList<Task> tasksInside = new ArrayList<>();
             getTasksInside(lane, tasksInside);
@@ -712,7 +728,7 @@ public class Modularizer {
                 System.out.println("Lane leer");
             }
         }
-    }
+    }*/
 
     /*public void checkTasks(Lane lane, int counter) {
         Collection<FlowNode> flowNodes = lane.getFlowNodeRefs();
@@ -930,29 +946,40 @@ public class Modularizer {
     }
 
 
+    /**
+     * Checking for all time dependencies within the model.
+     */
     public void checkTimeDependency() {
         Collection<ModelElementInstance> flowNodeInstances = modelInstance.getModelElementsByType(modelInstance.getModel().getType(FlowNode.class));
+        //List of all FlowNodes within the model
         ArrayList<FlowNode> allFlowNodes = new ArrayList<>();
         for (ModelElementInstance x:flowNodeInstances) {
             allFlowNodes.add((FlowNode) x);
         }
 
+        //Iterating through all FlowNodes
         for (FlowNode flowNode:allFlowNodes) {
+            //List for set of time dependent Tasks
             ArrayList<Task> timeDependentTasks = new ArrayList<>();
+            //Checking for merging parallelGateway
             if (flowNode instanceof ParallelGateway && flowNode.getPreviousNodes().list().size() > 1) {
                 ArrayList<FlowNode> visited = new ArrayList<>();
+                //If there is a Task in direct succession of the parallelGateway, it is added to the List of time dependent Tasks
                 if (getFirstTaskFollowing(flowNode) != null) {
                     visited.add(getFirstTaskFollowing(flowNode));
                     timeDependentTasks.add(getFirstTaskFollowing(flowNode));
                 }
 
+                //List of all possible FlowNodes that might be the source of all paths merged by the parallelGateway
                 ArrayList<FlowNode> sourceNodes = getPossibleSourceNodes(flowNode);
 
+                //Identifying all Tasks between the merging parallelGateway and the source of all incoming paths
                 for (FlowNode f:flowNode.getPreviousNodes().list()) {
-                    getTasksAfterGateway2(f, timeDependentTasks, visited, sourceNodes);
+                    getTasksAfterGateway(f, timeDependentTasks, visited, sourceNodes);
                 }
             }
 
+            //Storing time dependencies between all possible combinations of two Tasks in timeDependencies Array
             for (int i = 0; i < tasks.size(); i++) {
                 for (int j = 0; j < tasks.size(); j++) {
                     if (i != j && timeDependentTasks.contains(tasks.get(i)) && timeDependentTasks.contains(tasks.get(j))) {
@@ -963,15 +990,33 @@ public class Modularizer {
         }
     }
 
+    /**
+     *
+     * @param flowNode FlowNode
+     * @return
+     */
     public ArrayList<FlowNode> getPossibleSourceNodes(FlowNode flowNode) {
+        //List of FlowNodes visited by iterating through all incoming paths of flowNode
         ArrayList<FlowNode> visitedByAll = new ArrayList<>();
+        /*
+        List of FlowNodes that have been visited by all iterations through incoming paths of flowNode and hence qualify
+        to be source nodes
+         */
         ArrayList<FlowNode> possibleSourceNodes = new ArrayList<>();
+
+        //if flowNode has previous FlowNodes iterating through all incoming paths
         if (flowNode.getPreviousNodes().list().size() != 0) {
             for (int i = 0; i < flowNode.getPreviousNodes().list().size(); i++) {
+                //List of FlowNodes already visited in this iteration
                 ArrayList<FlowNode> visited = new ArrayList<>();
                 visited.add(flowNode.getPreviousNodes().list().get(i));
+                //Calling Method that adds all previous FlowNodes to visited List
                 addPreviousFlowNodes(flowNode.getPreviousNodes().list().get(i), visited);
 
+                /*
+                Iterating through all FlowNodes in visited List; if not contained in visitedByAll adding to visitedByAll;
+                otherwise adding FlowNode to possibleSourceNodes
+                 */
                 for(FlowNode f:visited) {
                     if(visitedByAll.contains(f)) {
                         possibleSourceNodes.add(f);
@@ -979,31 +1024,34 @@ public class Modularizer {
                     }
                     visitedByAll.add(f);
                 }
-                /*if (i == 0) {
-                    for (FlowNode f:visited) {
-                        visitedByAll.add(f);
-                    }
-                }*/
 
+                /*
+                Iterating through all FlowNodes within possibleSourceNodes; All FlowNodes in possibleSourceNodes
+                that have not been visited in this iteration of previous FLowNodes are removed from possibleSourceNodes
+                 */
                 for (int j = 0; j < possibleSourceNodes.size(); j++) {
                     if (visited.contains(possibleSourceNodes.get(j)) == false) {
                         visitedByAll.remove(visitedByAll.get(j));
                     }
                 }
-
-                /*for (FlowNode f:visitedByAll) {
-                    if (!visited.contains(f)) {
-                        visitedByAll.remove(f);
-                    }
-                }*/
             }
         }
         return possibleSourceNodes;
     }
 
+    /**
+     * Iteratively and recursively visits all FlowNodes prior (in sequence) to flowNode and adds them to visited List
+     * @param flowNode FlowNode
+     * @param visited ArrayList of FlowNodes
+     */
     public void addPreviousFlowNodes(FlowNode flowNode, ArrayList<FlowNode> visited) {
+        //if flowNode has previous FlowNodes iterating through all previous FlowNodes f
         if (flowNode.getPreviousNodes().list().size() != 0) {
             for (FlowNode f:flowNode.getPreviousNodes().list()) {
+                /*
+                if f has not been visited yet it is added to visited List and this method is called recursively for f;
+                otherwise recursion is stopped within current iteration
+                 */
                 if (visited.contains(f)) {
                     continue;
                 }
@@ -1014,7 +1062,7 @@ public class Modularizer {
         }
     }
 
-    public void getTasksAfterGateway(FlowNode flowNode, ArrayList<Task> tasksBetweenGateways, ArrayList<FlowNode> visited, ArrayList<FlowNode> multiples) {
+    public void getTasksAfterGateway2(FlowNode flowNode, ArrayList<Task> tasksBetweenGateways, ArrayList<FlowNode> visited, ArrayList<FlowNode> multiples) {
         if (flowNode.getPreviousNodes().list().size() != 0) {
             for (FlowNode f:flowNode.getPreviousNodes().list()) {
                 if (visited.contains(f)) {
@@ -1059,34 +1107,65 @@ public class Modularizer {
 
     }
 
-    public void getTasksAfterGateway2(FlowNode flowNode, ArrayList<Task> tasksBetweenGateways, ArrayList<FlowNode> visited, ArrayList<FlowNode> sourceNodes) {
+    /**
+     * Identifies all Tasks between flowNode and any FlowNode within sourceNodes List and adds them to
+     * tasksBetweenGateways List
+     * @param flowNode FlowNode
+     * @param tasksBetweenGateways ArrayList of Tasks
+     * @param visited ArrayList of FlowNodes
+     * @param sourceNodes ArrayList of FlowNodes
+     */
+    public void getTasksAfterGateway(FlowNode flowNode, ArrayList<Task> tasksBetweenGateways, ArrayList<FlowNode> visited, ArrayList<FlowNode> sourceNodes) {
+        //Checking if flowNode has not been visited yes and if flowNode is not contained within sourceNodes List
         if (visited.contains(flowNode) == false && sourceNodes.contains(flowNode) == false) {
+            //flowNode is added to visited List
             visited.add(flowNode);
+            //if flowNode is a Task it is added to tasksBetweenGateways List
             if (flowNode instanceof Task) {
                 tasksBetweenGateways.add((Task) flowNode);
             }
 
+            /*
+            if flowNode has previous FlowNodes iterating through all previous FlowNodes f and recursively calling this
+            method for f
+             */
             if (flowNode.getPreviousNodes().list().size() != 0) {
                 for (FlowNode f:flowNode.getPreviousNodes().list()) {
-                    getTasksAfterGateway2(f, tasksBetweenGateways, visited, sourceNodes);
+                    getTasksAfterGateway(f, tasksBetweenGateways, visited, sourceNodes);
                 }
             }
         }
     }
 
+    /**
+     * Checks for first Task that (in sequence) is succeeding (not necessarily directly) flowNode without any
+     * CatchEvent or Gateway between flowNode and said Task
+     * @param flowNode FlowNode
+     * @return first Task after flowNode (without any CatchEvent or Gateway inbetween); null if no according Task found
+     */
     public Task getFirstTaskFollowing(FlowNode flowNode) {
         Task firstTask = null;
+        /*
+        if flowNode has succeeding FlowNodes iterating through all succeeding FlowNodes f
+        */
         if (flowNode.getSucceedingNodes().list().size() > 0) {
             for (FlowNode f:flowNode.getSucceedingNodes().list()) {
+                //if f is a Task it is the firstTask succeeding flowNode
                 if (f instanceof Task) {
                     firstTask = (Task) f;
                 }
+                //skipping this iteration if f is a CatchEvent
                 else if (f instanceof CatchEvent) {
                     continue;
                 }
+                //skipping this iteration if f is a Gateway
                 else if (f instanceof Gateway) {
                     continue;
                 }
+                /*
+                if first Task succeeding flowNode has not been found and there was no CatchEvent or Gateway this method
+                is called recursively for f
+                 */
                 else {
                     firstTask = getFirstTaskFollowing(f);
                 }
@@ -1095,16 +1174,36 @@ public class Modularizer {
         return firstTask;
     }
 
+    /**
+     * Checking whether n & m have document dependency
+     * @param n Task
+     * @param m Task
+     * @return true if n & m have document dependency; otherwise false
+     */
     public boolean checkDocumentDependency(Task n, Task m) {
         boolean hasDocumentDependency = false;
+        //Iterating through all DataInputAssociations of n
         for (DataAssociation associationN:n.getDataInputAssociations()) {
+            //Iterating through all DataInputAssociations of m
             for (DataAssociation associationM:m.getDataInputAssociations()) {
+                //Iterating through all sources of DataInputAssociations of n
                 for (ItemAwareElement sourceN:associationN.getSources()) {
+                    //Iterating through all sources of DataInputAssociations of m
                     for (ItemAwareElement sourceM:associationM.getSources()) {
-                        if(sourceN instanceof DataStoreReference && sourceM instanceof DataStoreReference && ((DataStoreReference) sourceN).getName().equals(((DataStoreReference) sourceM).getName())) {
+                        /*
+                        Checking whether the sources of the DataInputAssociations of n & m are both DataStoreReferences
+                        and have the same name
+                         */
+                        if(sourceN instanceof DataStoreReference && sourceM instanceof DataStoreReference &&
+                                ((DataStoreReference) sourceN).getName().equals(((DataStoreReference) sourceM).getName())) {
                             hasDocumentDependency = true;
                         }
-                        else if (sourceN instanceof DataObjectReference && sourceM instanceof DataObjectReference && ((DataObjectReference) sourceN).getName().equals(((DataObjectReference) sourceM).getName())) {
+                        /*
+                        Checking whether the sources of the DataInputAssociations of n & m are both DataObjectReferences
+                        and have the same name
+                         */
+                        else if (sourceN instanceof DataObjectReference && sourceM instanceof DataObjectReference &&
+                                ((DataObjectReference) sourceN).getName().equals(((DataObjectReference) sourceM).getName())) {
                             hasDocumentDependency = true;
                         }
                     }
@@ -1114,6 +1213,9 @@ public class Modularizer {
         return hasDocumentDependency;
     }
 
+    /**
+     * Storing document dependencies between all possible combinations of two Tasks in documentDependencies Array
+     */
     public void addDocumentDependencies() {
         for (int i = 0; i < tasks.size(); i++) {
             for (int j = 0; j < tasks.size(); j++) {
@@ -1124,33 +1226,50 @@ public class Modularizer {
         }
     }
 
+    /**
+     * Checking whether n & m have data dependency
+     * @param n Task
+     * @param m Task
+     * @return true if n needs the data output of m as input or vice versa; false otherwise
+     */
     public boolean checkDataDependency(Task n, Task m) {
         boolean hasDataDependency = false;
+        //Iterating through all DataOutputAssociations of n
         for (DataAssociation associationN:n.getDataOutputAssociations()) {
+            //Iterating through all DataInputAssociations of m
             for (DataAssociation associationM:m.getDataInputAssociations()) {
+                //Iterating through all sources of DataInputAssociations of m
                 for (ItemAwareElement sourceM:associationM.getSources()) {
-                    //System.out.println("Target output " + n.getName() + ": (" + associationN.getTarget().getClass() + ") " + associationN.getTarget().getId());
-                    //System.out.println("Source input " + m.getName() + ": (" + sourceM.getClass() + ") " + sourceM.getId());
-                    if (associationN.getTarget() instanceof DataObjectReference && sourceM instanceof DataObjectReference && associationN.getTarget().getId().equals(sourceM.getId())) {
+                    /*
+                    Checking whether the target of the DataOutputAssociation of n and the source of the
+                    DataInputAssociation of m are both DataObjectReferences and whether they have the same id
+                    */
+                    if (associationN.getTarget() instanceof DataObjectReference && sourceM instanceof DataObjectReference &&
+                            ((DataObjectReference) associationN.getTarget()).getName().equals(((DataObjectReference) sourceM).getName())) {
                         hasDataDependency = true;
                     }
                 }
             }
         }
+
+        //Same procedure as above but with m & n switching places
         for (DataAssociation associationN:n.getDataInputAssociations()) {
             for (DataAssociation associationM:m.getDataOutputAssociations()) {
                 for (ItemAwareElement sourceN:associationN.getSources()) {
-                    //System.out.println("Target output " + m.getName() + ": (" + associationM.getTarget().getClass() + ") " + associationM.getTarget().getId());
-                    //System.out.println("Source input " + n.getName() + ": (" + sourceN.getClass() + ") " + sourceN.getId());
-                    if (associationM.getTarget() instanceof DataObjectReference && sourceN instanceof DataObjectReference && associationM.getTarget().getId().equals(sourceN.getId())) {
+                    if (associationM.getTarget() instanceof DataObjectReference && sourceN instanceof DataObjectReference
+                            && associationM.getTarget().getId().equals(sourceN.getId())) {
                         hasDataDependency = true;
                     }
                 }
             }
         }
+
         return hasDataDependency;
     }
 
+    /**
+     * Storing data dependencies between all possible combinations of two Tasks in dataDependencies Array
+     */
     public void addDataDependencies() {
         for (int i = 0; i < tasks.size(); i++) {
             for (int j = 0; j < tasks.size(); j++) {
