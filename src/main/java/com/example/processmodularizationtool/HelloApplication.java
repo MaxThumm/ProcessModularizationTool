@@ -100,7 +100,7 @@ public class HelloApplication extends Application {
         modularizer.exportTimeDependencies(exportName + "_timeDependencies.csv");
         modularizer.exportLaneDependencies(exportName + "_laneDependencies.csv");
         modularizer.exportDataDependencies(exportName + "_dataDependencies.csv");
-        modularizer.exportInputDependencies(exportName + "_inputDependencies.csv");
+        modularizer.exportInputDependencies(exportName + "_documentDependencies.csv");
         modularizer.exportCombinedDependencies(exportName + "_combinedDependencies.csv");
 
         System.exit(0);

@@ -189,14 +189,31 @@ public class Modularizer {
         }
     }
 
+    /**
+     *
+     * @param fileName
+     */
     public void exportLaneDependencies(String fileName) {
-        String[][] laneDependencyStrings = new String[laneDependencies.length + 1][laneDependencies.length + 1];
+        /*
+        Two-dimensional String-Array with both length and width of the
+        dependency-matix +1 to have an extra lane and column for the task
+        names
+         */
+        String[][] laneDependencyStrings = new String
+                [laneDependencies.length + 1][laneDependencies.length + 1];
+        //Iteration through the whole String-Array
         for (int i = 0; i < laneDependencyStrings.length; i++) {
             for (int j = 0; j < laneDependencyStrings.length; j++) {
+                //First column
                 if (i == 0) {
                     if (j == 0) {
                         laneDependencyStrings[i][j] = "X";
                     }
+                    /*
+                    For each lane, the first column contains the task name.
+                     All carriage returns or new lines are replaced with a
+                     space for coherence.
+                     */
                     else {
                         String string = tasks.get(j - 1).getName();
                         string = string.replaceAll("\r\n", " ");
@@ -205,6 +222,12 @@ public class Modularizer {
                         laneDependencyStrings[i][j] = string;
                     }
                 }
+                //First lane
+                /*
+                For each column, the first lane contains the task name.
+                 All carriage returns or new lines are replaced with a
+                 space for coherence.
+                 */
                 else if (j == 0) {
                     String string = tasks.get(i - 1).getName();
                     string = string.replaceAll("\r\n", " ");
@@ -212,13 +235,20 @@ public class Modularizer {
                     string = string.replaceAll("\r", " ");
                     laneDependencyStrings[i][j] = string;
                 }
+                /*
+                Every field apart from the first lane and column ist filled
+                 in with the according laneDependency value transformed to
+                 a String.
+                 */
                 else {
-                    laneDependencyStrings[i][j] = String.valueOf(laneDependencies[i - 1][j - 1]);
+                    laneDependencyStrings[i][j] =
+                            String.valueOf(laneDependencies[i - 1][j - 1]);
                 }
             }
         }
 
         CsvWriter writer = new CsvWriter();
+        //Export of the newly generated String-Array as CSV-File
         writer.exportCsv(laneDependencyStrings, fileName);
     }
 
@@ -764,7 +794,9 @@ public class Modularizer {
 
     public void createOrderedTaskList (){
         for (Participant participant:participants) {
-            getTasksFromPool(participant);
+            if (participant.getProcess() != null) {
+                getTasksFromPool(participant);
+            }
         }
     }
 
@@ -880,77 +912,17 @@ public class Modularizer {
         getTasksFromPool(participant);
     }
 
-    public void checkTimeDependency2() {
-        Collection<ModelElementInstance> flowNodeInstances = modelInstance.getModelElementsByType(modelInstance.getModel().getType(FlowNode.class));
-        ArrayList<FlowNode> allFlowNodes = new ArrayList<>();
-        for (ModelElementInstance x:flowNodeInstances) {
-            allFlowNodes.add((FlowNode) x);
-        }
-
-        for (FlowNode flowNode:allFlowNodes) {
-            ArrayList<Task> timeDependentTasks = new ArrayList<>();
-            if (flowNode instanceof ParallelGateway && flowNode.getPreviousNodes().list().size() > 1) {
-                ArrayList<FlowNode> visited = new ArrayList<>();
-                ArrayList<FlowNode> multiples = new ArrayList<>();
-                if (getFirstTaskFollowing(flowNode) != null) {
-                    visited.add(getFirstTaskFollowing(flowNode));
-                    timeDependentTasks.add(getFirstTaskFollowing(flowNode));
-                }
-                getTasksAfterGateway(flowNode, timeDependentTasks, visited, multiples);
-            }
-
-            for (int i = 0; i < tasks.size(); i++) {
-                for (int j = 0; j < tasks.size(); j++) {
-                    if (timeDependentTasks.contains(tasks.get(i)) && timeDependentTasks.contains(tasks.get(j))) {
-                        timeDependencies[i][j] = 1;
-                    }
-                }
-            }
-
-            /*for (int i = 0; i < tasks.size(); i++) {
-                for (Task n:timeDependentTasks) {
-                    if (n.getId().equals(tasks.get(i).getId())) {
-                        for (int j = 0; j < tasks.size(); j++) {
-                            for (Task m:timeDependentTasks) {
-                                if (m.getId().equals(tasks.get(j).getId()) && i != j) {
-                                    timeDependencies[i][j] = 1;
-                                }
-                            }
-                        }
-                    }
-                }
-            }*/
-        }
-
-        /*for (int i = 0; i < timeDependentTasks.size(); i++) {
-            int counter = 0;
-            String taskToRemove = null;
-            for (int j = 0; j < timeDependentTasks.size(); j++) {
-                if (i != j && timeDependentTasks.get(i).getId().equals(timeDependentTasks.get(j).getId())) {
-                    taskToRemove = timeDependentTasks.get(j).getId();
-                    //timeDependentTasks.remove(j);
-                    //j--;
-                }
-            }
-            if (taskToRemove != null) {
-                for (int n = 0; n < timeDependentTasks.size(); n++) {
-                    if (timeDependentTasks.get(n).getId().equals(taskToRemove)) {
-                        timeDependentTasks.remove(n);
-                        n--;
-                    }
-                }
-            }
-        }*/
-
-
-    }
 
 
     /**
-     * Checking for all time dependencies within the model.
+     * Checking for all time dependencies within the model, adding the value
+     * 1 to the time dependency matrix for each combination of two tasks that
+     * are time dependend.
      */
     public void checkTimeDependency() {
-        Collection<ModelElementInstance> flowNodeInstances = modelInstance.getModelElementsByType(modelInstance.getModel().getType(FlowNode.class));
+        Collection<ModelElementInstance> flowNodeInstances =
+                modelInstance.getModelElementsByType(modelInstance.getModel()
+                        .getType(FlowNode.class));
         //List of all FlowNodes within the model
         ArrayList<FlowNode> allFlowNodes = new ArrayList<>();
         for (ModelElementInstance x:flowNodeInstances) {
@@ -961,28 +933,52 @@ public class Modularizer {
         for (FlowNode flowNode:allFlowNodes) {
             //List for set of time dependent Tasks
             ArrayList<Task> timeDependentTasks = new ArrayList<>();
-            //Checking for merging parallelGateway
-            if (flowNode instanceof ParallelGateway && flowNode.getPreviousNodes().list().size() > 1) {
+            /*
+            Checking for merging parallelGateway; if it has more than one
+            previous node it is a merging gateway
+             */
+            if (flowNode instanceof ParallelGateway &&
+                    flowNode.getPreviousNodes().list().size() > 1) {
+                /*
+                List of visited Tasks to prevent StackOverFlowErrors
+                because of Task loops
+                 */
                 ArrayList<FlowNode> visited = new ArrayList<>();
-                //If there is a Task in direct succession of the parallelGateway, it is added to the List of time dependent Tasks
+                /*
+                If there is a Task in direct succession of the
+                parallelGateway, it is added to the List of time dependent
+                Tasks
+                 */
                 if (getFirstTaskFollowing(flowNode) != null) {
                     visited.add(getFirstTaskFollowing(flowNode));
                     timeDependentTasks.add(getFirstTaskFollowing(flowNode));
                 }
 
-                //List of all possible FlowNodes that might be the source of all paths merged by the parallelGateway
-                ArrayList<FlowNode> sourceNodes = getPossibleSourceNodes(flowNode);
+                /*
+                List of all possible FlowNodes that might be the source of
+                all paths merged by the parallelGateway
+                 */
+                ArrayList<FlowNode> sourceNodes =
+                        getPossibleSourceNodes(flowNode);
 
-                //Identifying all Tasks between the merging parallelGateway and the source of all incoming paths
+                /*
+                Identifying all Tasks between the merging parallelGateway
+                and the source of all incoming paths
+                 */
                 for (FlowNode f:flowNode.getPreviousNodes().list()) {
-                    getTasksAfterGateway(f, timeDependentTasks, visited, sourceNodes);
+                    getTasksBeforeGateway(f, timeDependentTasks, visited,
+                            sourceNodes);
                 }
             }
 
-            //Storing time dependencies between all possible combinations of two Tasks in timeDependencies Array
+            /*
+            Storing time dependencies between all possible combinations of
+            two Tasks in timeDependencies Array
+             */
             for (int i = 0; i < tasks.size(); i++) {
                 for (int j = 0; j < tasks.size(); j++) {
-                    if (i != j && timeDependentTasks.contains(tasks.get(i)) && timeDependentTasks.contains(tasks.get(j))) {
+                    if (i != j && timeDependentTasks.contains(tasks.get(i))
+                            && timeDependentTasks.contains(tasks.get(j))) {
                         timeDependencies[i][j] = 1;
                     }
                 }
@@ -996,25 +992,35 @@ public class Modularizer {
      * @return
      */
     public ArrayList<FlowNode> getPossibleSourceNodes(FlowNode flowNode) {
-        //List of FlowNodes visited by iterating through all incoming paths of flowNode
+        /*List of FlowNodes visited by iterating through all incoming paths
+         of flowNode
+         */
         ArrayList<FlowNode> visitedByAll = new ArrayList<>();
         /*
-        List of FlowNodes that have been visited by all iterations through incoming paths of flowNode and hence qualify
-        to be source nodes
+        List of FlowNodes that have been visited by all iterations through
+        incoming paths of flowNode and hence qualify to be source nodes
          */
         ArrayList<FlowNode> possibleSourceNodes = new ArrayList<>();
 
-        //if flowNode has previous FlowNodes iterating through all incoming paths
+        /*
+        if flowNode has previous FlowNodes iterating through all incoming
+        paths
+         */
         if (flowNode.getPreviousNodes().list().size() != 0) {
             for (int i = 0; i < flowNode.getPreviousNodes().list().size(); i++) {
                 //List of FlowNodes already visited in this iteration
                 ArrayList<FlowNode> visited = new ArrayList<>();
                 visited.add(flowNode.getPreviousNodes().list().get(i));
-                //Calling Method that adds all previous FlowNodes to visited List
-                addPreviousFlowNodes(flowNode.getPreviousNodes().list().get(i), visited);
+                /*
+                Calling Method that adds all previous FlowNodes to visited
+                List
+                 */
+                addPreviousFlowNodes(flowNode.getPreviousNodes()
+                        .list().get(i), visited);
 
                 /*
-                Iterating through all FlowNodes in visited List; if not contained in visitedByAll adding to visitedByAll;
+                Iterating through all FlowNodes in visited List; if not
+                contained in visitedByAll adding to visitedByAll;
                 otherwise adding FlowNode to possibleSourceNodes
                  */
                 for(FlowNode f:visited) {
@@ -1026,12 +1032,14 @@ public class Modularizer {
                 }
 
                 /*
-                Iterating through all FlowNodes within possibleSourceNodes; All FlowNodes in possibleSourceNodes
-                that have not been visited in this iteration of previous FLowNodes are removed from possibleSourceNodes
+                Iterating through all FlowNodes within possibleSourceNodes;
+                All FlowNodes in possibleSourceNodes that have not been
+                visited in this iteration of previous FLowNodes are removed
+                 from possibleSourceNodes
                  */
                 for (int j = 0; j < possibleSourceNodes.size(); j++) {
                     if (visited.contains(possibleSourceNodes.get(j)) == false) {
-                        visitedByAll.remove(visitedByAll.get(j));
+                        possibleSourceNodes.remove(possibleSourceNodes.get(j));
                     }
                 }
             }
@@ -1115,7 +1123,7 @@ public class Modularizer {
      * @param visited ArrayList of FlowNodes
      * @param sourceNodes ArrayList of FlowNodes
      */
-    public void getTasksAfterGateway(FlowNode flowNode, ArrayList<Task> tasksBetweenGateways, ArrayList<FlowNode> visited, ArrayList<FlowNode> sourceNodes) {
+    public void getTasksBeforeGateway(FlowNode flowNode, ArrayList<Task> tasksBetweenGateways, ArrayList<FlowNode> visited, ArrayList<FlowNode> sourceNodes) {
         //Checking if flowNode has not been visited yes and if flowNode is not contained within sourceNodes List
         if (visited.contains(flowNode) == false && sourceNodes.contains(flowNode) == false) {
             //flowNode is added to visited List
@@ -1131,7 +1139,7 @@ public class Modularizer {
              */
             if (flowNode.getPreviousNodes().list().size() != 0) {
                 for (FlowNode f:flowNode.getPreviousNodes().list()) {
-                    getTasksAfterGateway(f, tasksBetweenGateways, visited, sourceNodes);
+                    getTasksBeforeGateway(f, tasksBetweenGateways, visited, sourceNodes);
                 }
             }
         }
@@ -1257,7 +1265,7 @@ public class Modularizer {
             for (DataAssociation associationM:m.getDataOutputAssociations()) {
                 for (ItemAwareElement sourceN:associationN.getSources()) {
                     if (associationM.getTarget() instanceof DataObjectReference && sourceN instanceof DataObjectReference
-                            && associationM.getTarget().getId().equals(sourceN.getId())) {
+                            && ((DataObjectReference) associationM.getTarget()).getName().equals(((DataObjectReference) sourceN).getName())) {
                         hasDataDependency = true;
                     }
                 }
