@@ -5,11 +5,40 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7ae9a8c5-b030-4654-b255-46dd8955db1f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Beispiel_combinedDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Beispiel_dataDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Beispiel_inputDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Beispiel_laneDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Beispiel_timeDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Beispielprozess.bpmn" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bsp_combinedDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bsp_dataDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bsp_inputDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bsp_laneDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bsp_timeDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/How2Travel (Kopie)-6_dataDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/How2Travel (Kopie)-6_dependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/How2Travel (Kopie)-6_laneDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/How2Travel (Kopie)-6_timeDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/How2Travel (Kopie)-7.bpmn" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/How2Travel (Kopie)-7_combinedDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/How2Travel (Kopie)-7_dataDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/How2Travel (Kopie)-7_dependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/How2Travel (Kopie)-7_inputDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/How2Travel (Kopie)-7_laneDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/How2Travel (Kopie)-7_timeDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/h2t_combinedDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/h2t_dataDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/h2t_inputDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/h2t_laneDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/h2t_timeDependencies.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/CsvWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/CsvWriter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/HelloApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/HelloApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/HelloController.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/Modularizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/Modularizer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/processmodularizationtool/TaskClass.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/com/example/processmodularizationtool/hello-view.fxml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,7 +134,7 @@
       <workItem from="1683803517457" duration="3078000" />
       <workItem from="1683806674227" duration="123000" />
       <workItem from="1683806989331" duration="16711000" />
-      <workItem from="1684505291859" duration="16131000" />
+      <workItem from="1684505291859" duration="22977000" />
     </task>
     <servers />
   </component>
